@@ -112,6 +112,12 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('ItemEntryCtrl', function($scope) {
+.controller('ItemEntryCtrl', function($scope, $state) {
+  $scope.saveItem = function() {
+    $state.go('tab.todo');
+  }
 
+  $scope.cancel = function() {
+    $state.go('tab.todo');
+  }
 });
