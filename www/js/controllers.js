@@ -113,6 +113,11 @@ angular.module('starter.controllers', [])
 })
 
 .controller('ItemEntryCtrl', function($scope, $state) {
+  $scope.name = "";
+  $scope.date = "";
+  $scope.time = "";
+  $scope.description = "";
+
   $scope.saveItem = function() {
     $state.go('tab.todo');
   }
