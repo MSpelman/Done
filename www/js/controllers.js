@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('TodoCtrl', function($scope, Schedule, $ionicActionSheet) {
+.controller('TodoCtrl', function($scope, Schedule, $ionicActionSheet, $state) {
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
   // To listen for when this page is active (for example, to refresh data),
@@ -42,6 +42,10 @@ angular.module('starter.controllers', [])
     } else {
       return "-";
     }
+  }
+
+  $scope.addItem = function() {
+    $state.go('item-entry');
   }
 
   $scope.showMenu = function(item) {
@@ -105,5 +109,9 @@ angular.module('starter.controllers', [])
 })
 
 .controller('SettingsCtrl', function($scope) {
+
+})
+
+.controller('ItemEntryCtrl', function($scope) {
 
 });

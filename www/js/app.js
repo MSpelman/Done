@@ -110,6 +110,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         controller: 'SettingsCtrl'
       }
     }
+  })
+
+  .state('item-entry', {
+    url: '/item-entry',
+    templateUrl: 'templates/item-entry.html',
+    controller: 'ItemEntryCtrl'
   });
 
   // if none of the above states are matched, use this as the fallback
