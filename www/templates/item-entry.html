@@ -3,7 +3,24 @@
     <h2 class="title">Item Entry</h2>
   </ion-header-bar>
   <ion-content class="padding">
-    TODO - add fields
+    <div class="list">
+      <label class="item item-input">
+        <span class="input-label">Name</span>
+        <input type="text" placeholder="e.g. Walk Dog">
+      </label>
+      <label class="item item-input">
+        <span class="input-label">Date</span>
+        <input type="date">
+      </label>
+      <label class="item item-input">
+        <span class="input-label">Time</span>
+        <input type="time">
+      </label>
+      <label class="item item-input">
+        <span class="input-label">Description</span>
+        <textarea rows="5"></textarea>
+      </label>
+    </div>
     <div class="button-bar">
       <button class="button button-positive" ng-click="saveItem()">Save</button>
       <button class="button" ng-click="cancel()">Cancel</button>
