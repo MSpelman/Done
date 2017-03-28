@@ -28,6 +28,22 @@ angular.module('starter.controllers', [])
     event.preventDefault();
   }
 
+  $scope.completedText = function(item) {
+    if (item.completed) {
+      return " (Completed)";
+    } else {
+      return "-";
+    }
+  }
+
+  $scope.timeText = function(item) {
+    if (item.time != "") {
+      return " @" + item.time;
+    } else {
+      return "-";
+    }
+  }
+
   $scope.showMenu = function() {
     event.preventDefault();
     var menu = $ionicActionSheet.show({
