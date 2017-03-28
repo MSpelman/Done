@@ -44,7 +44,7 @@ angular.module('starter.controllers', [])
     }
   }
 
-  $scope.showMenu = function() {
+  $scope.showMenu = function(item) {
     event.preventDefault();
     var menu = $ionicActionSheet.show({
       buttons: [
@@ -60,6 +60,13 @@ angular.module('starter.controllers', [])
 
       },
       buttonClicked: function(index) {
+        switch (index) {
+          case 0:
+            $scope.completeTask(item);
+            break
+          default:
+            return true;
+        }
         return true;
       }
     });
