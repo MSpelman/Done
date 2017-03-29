@@ -4,9 +4,8 @@
 <ion-view view-title="{{item.name}}">
   <ion-content class="padding">
     <div class="padding">
-      <strong>{{item.name}}</strong><br><br>
+      <strong>{{item.name}}{{completedText()}}</strong><br><br>
       <strong>Time:</strong> {{item.time}}<br>
-      <strong>Completed?</strong> {{item.completed}}<br><br>
       <strong>Description:</strong>
       <p>
         {{item.description}}

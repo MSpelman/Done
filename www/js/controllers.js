@@ -28,22 +28,6 @@ angular.module('starter.controllers', [])
     event.preventDefault();
   }
 
-  $scope.completedText = function(item) {
-    if (item.completed) {
-      return " (Completed)";
-    } else {
-      return "-";
-    }
-  }
-
-  $scope.timeText = function(item) {
-    if (item.time != "") {
-      return " @" + item.time;
-    } else {
-      return "-";
-    }
-  }
-
   $scope.addItem = function() {
     $state.go('item-entry');
   }
@@ -94,6 +78,22 @@ angular.module('starter.controllers', [])
 
 .controller('TodoDetailCtrl', function($scope, $stateParams, Schedule) {
   $scope.item = Schedule.get($stateParams.itemId);
+
+  $scope.completedText = function() {
+    if ($scope.item.completed) {
+      return " (Completed)";
+    } else {
+      return "";
+    }
+  }
+
+  $scope.timeText = function() {
+    if ($scope.item.time != "") {
+      return " @" + item.time;
+    } else {
+      return "-";
+    }
+  }
 })
 
 .controller('CalendarDetailCtrl', function($scope, $stateParams, Chats) {
