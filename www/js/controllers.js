@@ -104,12 +104,17 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('ContactsCtrl', function($scope) {
-
+.controller('ContactsCtrl', function($scope, Chats) {
+  $scope.chats = Chats.all();
+  $scope.remove = function(chat) {
+    Chats.remove(chat);
+  };
 })
 
 .controller('SettingsCtrl', function($scope) {
-
+  $scope.settings = {
+    enableFriends: null
+  }
 })
 
 .controller('ItemEntryCtrl', function($scope, $state) {

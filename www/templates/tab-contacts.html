@@ -1,9 +1,22 @@
-<ion-view view-title="Account">
+<ion-view view-title="Done!">
+  <ion-header-bar class="bar bar-subheader">
+    <h2 class="title">Contacts</h2>
+  </ion-header-bar>
   <ion-content>
+    <div class="item-input-inset">
+      <label class="item-input-wrapper">
+        <i class="icon ion-ios-search placeholder-icon"></i>
+        <input type="search" placeholder="Search">
+      </label>
+      <button class="button button-icon">
+        <i class="icon ion-ios-plus-empty"></i>
+      </button>
+    </div>
     <ion-list>
-    <ion-toggle  ng-model="settings.enableFriends">
-        Enable Friends
-    </ion-toggle>
+      <ion-item class="item-remove-animate item-avatar" ng-repeat="chat in chats" type="item-text-wrap">
+        <img ng-src="{{chat.face}}">
+        <h2>{{chat.name}}</h2>
+      </ion-item>
     </ion-list>
   </ion-content>
 </ion-view>
