@@ -71,9 +71,23 @@ angular.module('starter.controllers', [])
   //});
 
   $scope.chats = Chats.all();
+  $scope.date = new Date();
+
   $scope.remove = function(chat) {
     Chats.remove(chat);
   };
+
+  $scope.nextDate = function () {
+    var dateTime = $scope.date.getTime();
+    dateTime = dateTime + 86400000;
+    $scope.date.setTime(dateTime);
+  }
+
+  $scope.prevDate = function () {
+    var dateTime = $scope.date.getTime();
+    dateTime = dateTime - 86400000;
+    $scope.date.setTime(dateTime);
+  }
 })
 
 .controller('TodoDetailCtrl', function($scope, $stateParams, Schedule) {
