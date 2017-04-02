@@ -137,11 +137,17 @@ angular.module('starter.controllers', [])
   $scope.time = "";
   $scope.description = "";
 
+  $scope.now = new Date();
+
   $scope.saveItem = function() {
     $state.go('tab.todo');
   }
 
   $scope.cancel = function() {
     $state.go('tab.todo');
+  }
+
+  $scope.dateTest = function() {
+
   }
 });
