@@ -137,7 +137,14 @@ angular.module('starter.controllers', [])
   $scope.time = "";
   $scope.description = "";
 
-  $scope.now = new Date();
+  var date1 = new Date();
+  $scope.test1 = date1;
+  var date2 = new Date();
+  date2.setHours(0, 0, 0, 0);
+  $scope.test2 = date2;
+  var date3 = new Date();
+  date3.setUTCHours(0, 0, 0, 0);
+  $scope.test3 = date3;
 
   $scope.saveItem = function() {
     $state.go('tab.todo');
@@ -148,6 +155,7 @@ angular.module('starter.controllers', [])
   }
 
   $scope.dateTest = function() {
+
 
   }
 });

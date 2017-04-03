@@ -155,28 +155,28 @@ angular.module('starter.services', [])
 
     this.addDay = function(newDay) {
       var date = newDay.getDate();
-      days[date] = newDay;
+      var dateKey = date.getTime();
+      days[dateKey] = newDay;
     };
 
     this.getDay = function(date) {
-
-    }
+      return days[date.getTime()];
+    };
 
     this.getToday = function() {
       var todayDate = new Date();
-      // This won't actually work; need to rethink how handle dates
-      // Update to use getDay()
-      return days[todayDate];
+      todayDate.setHours(0, 0, 0, 0);
+      return this.getDay(todayDate);
     };
 
     this.getTomorrow = function() {
+      var todayDate = new Date();
+      todayDate.setHours(0, 0, 0, 0);
+      var todayTime = todayDate.getTime();
+      var tomorrowTime = todayTime + 86400000;
       var tomorrowDate = new Date();
-      var tomorrowTime = tomorrowDate.getTime();
-      tomorrowTime = tomorrowTime + 86400000;
-      tomorrowDate = tomorrowDate.setTime(tomorrowTime);
-      // This won't actually work; need to rethink how handle dates
-      // Update to use getDay()
-      return days[tomorrowDate];
+      tomorrowDate.setTime(tomorrowTime);
+      return this.getDay(tomorrowDate);
     };
 
     this.get = function(itemId) {
@@ -231,16 +231,17 @@ angular.module('starter.services', [])
  * old AndDone project) for the complete list of members.
  */
 .factory('Item', function() {
-  return function(id, name, description, date, time, isEvent) {
+  return function(id, name, description, time, timeless, duration) {
     this.id = id;
     this.name = name;
     this.description = description;
-    this.date = date;
-    this.time = time;
+    // this.date = date;
+    this.time = time;  // this should also include the date
+    this.timeless = timeless;
     this.completed = false;
-    this.event = isEvent;
-    this.beforeTasks = [];
-    this.duringTasks = [];
+    this.duration = duration;
+    //this.beforeTasks = [];
+    //this.duringTasks = [];
 
     this.completeTask = function() {
       this.completed = true;
@@ -255,7 +256,12 @@ angular.module('starter.services', [])
       return "";
     };
 
-    this.addBeforeTask = function(newTask) {
+    this.isEvent = function() {
+      if (this.duration != null) return true;
+      return false;
+    };
+
+    /* this.addBeforeTask = function(newTask) {
       this.beforeTasks.push(newTask);
     };
 
@@ -269,6 +275,6 @@ angular.module('starter.services', [])
 
     this.getDuringTasks = function() {
       return this.duringTasks;
-    };
+    }; */
   };
 });
