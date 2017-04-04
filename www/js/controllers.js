@@ -8,6 +8,7 @@ angular.module('starter.controllers', [])
   //
   //$scope.$on('$ionicView.enter', function(e) {
   //});
+  $rootScope.itemIndex = {}
   $rootScope.schedule = loadData();
   $rootScope.timeZone = new Date().getTimezoneOffset();
 
@@ -27,20 +28,17 @@ angular.module('starter.controllers', [])
   }; */
 
   $scope.displayTime = function(item) {
-    if (item.timeless) return "-";
-    var time = new Date();
-    time.setTime(item.time);
-    return time.toLocaleTimeString();
-  }
+    return item.displayTime();
+  };
 
   $scope.completeTask = function(item) {
     item.completed = true;
     event.preventDefault();
-  }
+  };
 
   $scope.addItem = function() {
     $state.go('item-entry');
-  }
+  };
 
   $scope.showMenu = function(item) {
     event.preventDefault();
@@ -87,16 +85,19 @@ angular.module('starter.controllers', [])
     //intTime = time.getTime();
     item = new Item(1, "CS 354 HW 4", "HW4 for CS 354", time, false, null);
     today.addItem(item);
+    $rootScope.itemIndex[item.id] = item;
     time = new Date();
     time = time.setHours(12, 0, 0, 0);
     //intTime = time.getTime();
     item = new Item(2, "Walk Dog", "Take dog to dog park", time, true, null);
     today.addItem(item);
+    $rootScope.itemIndex[item.id] = item;
     time = new Date();
     time.setHours(15, 0, 0, 0);
     //intTime = time.getTime();
     item = new Item(3, "Group Meeting", "Meet with CS 407 group", time, false, 60);
     today.addItem(item);
+    $rootScope.itemIndex[item.id] = item;
 
     // Create Day for tomorrow
     var tomorrowDate = new Date();
@@ -111,25 +112,28 @@ angular.module('starter.controllers', [])
     //intTime = time.getTime();
     item = new Item(4, "CS 367 HW 3", "HW3 for CS 367", time, false, null);
     tomorrow.addItem(item);
+    $rootScope.itemIndex[item.id] = item;
     time = new Date();
     time.setTime(tomorrowDate.getTime());
     time = time.setHours(12, 0, 0, 0);
     //intTime = time.getTime();
     item = new Item(5, "Walk Dog", "Take dog to dog park", time, true, null);
     tomorrow.addItem(item);
+    $rootScope.itemIndex[item.id] = item;
     time = new Date();
     time.setTime(tomorrowDate.getTime());
     time.setHours(17, 0, 0, 0);
     //intTime = time.getTime();
     item = new Item(6, "Group Meeting", "Meet with CS 506 group", time, false, 120);
     tomorrow.addItem(item);
+    $rootScope.itemIndex[item.id] = item;
 
     // Add days to schedule
     schedule.addDay(today);
     schedule.addDay(tomorrow);
 
     return schedule;
-  };
+  }
 })
 
 .controller('CalendarCtrl', function($scope, Chats) {
@@ -155,7 +159,7 @@ angular.module('starter.controllers', [])
     dateTime = dateTime + 86400000;
     $scope.date.setTime(dateTime);
     $scope.formattedDate = $scope.date.toDateString();
-  }
+  };
 
   $scope.prevDate = function () {
     var dateTime = $scope.date.getTime();
@@ -165,8 +169,8 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('TodoDetailCtrl', function($scope, $stateParams, Schedule) {
-  $scope.item = Schedule.get($stateParams.itemId);
+.controller('TodoDetailCtrl', function($scope, $stateParams, $rootScope) {
+  $scope.item = $rootScope.itemIndex[$stateParams.itemId];
 
   $scope.completedText = function() {
     if ($scope.item.completed) {
@@ -174,15 +178,19 @@ angular.module('starter.controllers', [])
     } else {
       return "";
     }
-  }
+  };
 
-  $scope.timeText = function() {
+  $scope.displayTime = function() {
+    return $scope.item.displayTime();
+  };
+
+  /*$scope.timeText = function() {
     if ($scope.item.time != "") {
       return " @" + item.time;
     } else {
       return "-";
     }
-  }
+  } */
 })
 
 .controller('CalendarDetailCtrl', function($scope, $stateParams, Chats) {
@@ -223,11 +231,11 @@ angular.module('starter.controllers', [])
 
   $scope.saveItem = function() {
     $state.go('tab.todo');
-  }
+  };
 
   $scope.cancel = function() {
     $state.go('tab.todo');
-  }
+  };
 
   $scope.dateTest = function() {
 

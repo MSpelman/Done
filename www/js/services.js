@@ -152,6 +152,7 @@ angular.module('starter.services', [])
 .factory('Calendar', function() {
   return function() {
     this.days = {};
+    this.itemIndex = {};
 
     this.addDay = function(newDay) {
       var date = newDay.getDate();
@@ -179,7 +180,7 @@ angular.module('starter.services', [])
       return this.getDay(tomorrowDate);
     };
 
-    this.get = function(itemId) {
+    /*this.get = function(itemId) {
       var today = getToday();
       var tomorrow = getTomorrow();
 
@@ -194,7 +195,7 @@ angular.module('starter.services', [])
         }
       }
       return null;
-    };
+    }; */
   };
 })
 
@@ -251,9 +252,11 @@ angular.module('starter.services', [])
       return this.completed;
     };
 
-    this.getTime = function() {
-      if (this.time != null) return this.time;
-      return "";
+    this.displayTime = function() {
+      if (this.timeless) return "-";
+      var time = new Date();
+      time.setTime(this.time);
+      return time.toLocaleTimeString();
     };
 
     this.isEvent = function() {
