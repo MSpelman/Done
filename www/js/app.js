@@ -9,55 +9,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
 .run(function($ionicPlatform, $rootScope, Calendar, Day, Item) {
 
-  function loadData() {
-    // Create schedule
-    var schedule = new Calendar();
-
-    // Create Day for today
-    var todayDate = new Date();
-    todayDate.setHours(0,0,0,0);
-    var today = new Day(todayDate);
-    var item;
-    var time;
-    // Items for today
-    time = new Date();
-    time.setHours(11, 30, 0, 0);
-    item = new Item(1, "CS 354 HW 4", "HW4 for CS 354", time, false, null);
-    today.addItem(item);
-    time = new Date();
-    time = time.setHours(12, 0, 0, 0);
-    item = new Item(2, "Walk Dog", "Take dog to dog park", time, true, null);
-    today.addItem(item);
-    time = new Date();
-    time.setHours(15, 0, 0, 0);
-    item = new Item(3, "Group Meeting", "Meet with CS 407 group", time, false, 60);
-    today.addItem(item);
-
-    // Create Day for tomorrow
-    var tomorrowDate = new Date();
-    tomorrowDate.setHours(0,0,0,0);
-    var tomorrow = new Day(tomorrowDate);
-    // Items for tomorrow
-    time = new Date();
-    time.setHours(23, 0, 0, 0);
-    item = new Item(4, "CS 367 HW 3", "HW3 for CS 367", time, false, null);
-    tomorrow.addItem(item);
-    time = new Date();
-    time = time.setHours(12, 0, 0, 0);
-    item = new Item(5, "Walk Dog", "Take dog to dog park", time, true, null);
-    tomorrow.addItem(item);
-    time = new Date();
-    time.setHours(17, 0, 0, 0);
-    item = new Item(6, "Group Meeting", "Meet with CS 506 group", time, false, 120);
-    tomorrow.addItem(item);
-
-    // Add days to schedule
-    schedule.addDay(today);
-    schedule.addDay(tomorrow);
-
-    return schedule;
-  }
-
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -70,9 +21,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
     }
-
-    //$rootScope.schedule = loadData();
-    $rootScope.timeZone = new Date().getTimezoneOffset();
 
   });
 })

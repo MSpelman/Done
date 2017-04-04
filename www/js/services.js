@@ -156,11 +156,11 @@ angular.module('starter.services', [])
     this.addDay = function(newDay) {
       var date = newDay.getDate();
       var dateKey = date.getTime();
-      days[dateKey] = newDay;
+      this.days[dateKey] = newDay;
     };
 
     this.getDay = function(date) {
-      return days[date.getTime()];
+      return this.days[date.getTime()];
     };
 
     this.getToday = function() {

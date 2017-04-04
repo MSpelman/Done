@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('TodoCtrl', function($scope, Schedule, $ionicActionSheet, $state) {
+.controller('TodoCtrl', function($scope, Schedule, $ionicActionSheet, $state, $rootScope, Calendar, Item, Day) {
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
   // To listen for when this page is active (for example, to refresh data),
@@ -8,19 +8,29 @@ angular.module('starter.controllers', [])
   //
   //$scope.$on('$ionicView.enter', function(e) {
   //});
-  $scope.today = Schedule.getToday();
-  $scope.tomorrow = Schedule.getTomorrow();
+  $rootScope.schedule = loadData();
+  $rootScope.timeZone = new Date().getTimezoneOffset();
+
+  $scope.today = $rootScope.schedule.getToday();
+  $scope.tomorrow = $rootScope.schedule.getTomorrow();
 
   $scope.getColor = function (item) {
     if (item.completed == true) return "gray";
-    if (item.event == true) return "hotpink";
+    if (item.duration > 0) return "hotpink";
     return "blue";
-  }
+  };
 
-  $scope.getColor2 = function (item) {
+  /* $scope.getColor2 = function (item) {
     if (item.completed == true) return "item-stable";
     if (item.event == true) return "item-calm";
     return "item-positive";
+  }; */
+
+  $scope.displayTime = function(item) {
+    if (item.timeless) return "-";
+    var time = new Date();
+    time.setTime(item.time);
+    return time.toLocaleTimeString();
   }
 
   $scope.completeTask = function(item) {
@@ -58,6 +68,67 @@ angular.module('starter.controllers', [])
         return true;
       }
     });
+  };
+
+  function loadData() {
+    // Create schedule
+    var schedule = new Calendar();
+
+    // Create Day for today
+    var todayDate = new Date();
+    todayDate.setHours(0,0,0,0);
+    var today = new Day(todayDate);
+    var item;
+    var time;
+    var intTime;
+    // Items for today
+    time = new Date();
+    time.setHours(11, 30, 0, 0);
+    //intTime = time.getTime();
+    item = new Item(1, "CS 354 HW 4", "HW4 for CS 354", time, false, null);
+    today.addItem(item);
+    time = new Date();
+    time = time.setHours(12, 0, 0, 0);
+    //intTime = time.getTime();
+    item = new Item(2, "Walk Dog", "Take dog to dog park", time, true, null);
+    today.addItem(item);
+    time = new Date();
+    time.setHours(15, 0, 0, 0);
+    //intTime = time.getTime();
+    item = new Item(3, "Group Meeting", "Meet with CS 407 group", time, false, 60);
+    today.addItem(item);
+
+    // Create Day for tomorrow
+    var tomorrowDate = new Date();
+    tomorrowDate.setHours(0,0,0,0);
+    var tomorrowTime = tomorrowDate.getTime();
+    tomorrowDate.setTime(tomorrowTime + 86400000);
+    var tomorrow = new Day(tomorrowDate);
+    // Items for tomorrow
+    time = new Date();
+    time.setTime(tomorrowDate.getTime());
+    time.setHours(23, 0, 0, 0);
+    //intTime = time.getTime();
+    item = new Item(4, "CS 367 HW 3", "HW3 for CS 367", time, false, null);
+    tomorrow.addItem(item);
+    time = new Date();
+    time.setTime(tomorrowDate.getTime());
+    time = time.setHours(12, 0, 0, 0);
+    //intTime = time.getTime();
+    item = new Item(5, "Walk Dog", "Take dog to dog park", time, true, null);
+    tomorrow.addItem(item);
+    time = new Date();
+    time.setTime(tomorrowDate.getTime());
+    time.setHours(17, 0, 0, 0);
+    //intTime = time.getTime();
+    item = new Item(6, "Group Meeting", "Meet with CS 506 group", time, false, 120);
+    tomorrow.addItem(item);
+
+    // Add days to schedule
+    schedule.addDay(today);
+    schedule.addDay(tomorrow);
+
+    return schedule;
   };
 })
 

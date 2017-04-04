@@ -16,7 +16,7 @@
           <i class="icon ion-ios-checkmark"></i>
         </button>
         <div style="margin-left: 50px">
-          <h2>{{item.time}}</h2>
+          <h2>{{displayTime(item)}}</h2>
           <p style="color: {{getColor(item)}}">{{item.name}}</p>
         </div>
         <button class="button button-positive" ng-click="showMenu(item)">
@@ -34,7 +34,7 @@
           <i class="icon ion-ios-checkmark"></i>
         </button>
         <div style="margin-left: 50px">
-          <h2>{{item.time}}</h2>
+          <h2>{{displayTime(item)}}</h2>
           <p style="color: {{getColor(item)}}">{{item.name}}</p>
         </div>
         <button class="button button-positive" ng-click="showMenu(item)">
