@@ -72,6 +72,8 @@ angular.module('starter.controllers', [])
 
   $scope.chats = Chats.all();
   $scope.date = new Date();
+  $scope.formattedDate = $scope.date.toDateString();
+  $scope.events = [ ];
 
   $scope.remove = function(chat) {
     Chats.remove(chat);
@@ -81,12 +83,14 @@ angular.module('starter.controllers', [])
     var dateTime = $scope.date.getTime();
     dateTime = dateTime + 86400000;
     $scope.date.setTime(dateTime);
+    $scope.formattedDate = $scope.date.toDateString();
   }
 
   $scope.prevDate = function () {
     var dateTime = $scope.date.getTime();
     dateTime = dateTime - 86400000;
     $scope.date.setTime(dateTime);
+    $scope.formattedDate = $scope.date.toDateString();
   }
 })
 
