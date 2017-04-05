@@ -8,7 +8,7 @@ angular.module('starter.controllers', [])
   //
   //$scope.$on('$ionicView.enter', function(e) {
   //});
-  $rootScope.itemIndex = {}
+  $rootScope.itemIndex = {};
   $rootScope.schedule = loadData();
   $rootScope.timeZone = new Date().getTimezoneOffset();
 
@@ -59,7 +59,10 @@ angular.module('starter.controllers', [])
         switch (index) {
           case 0:
             $scope.completeTask(item);
-            break
+            break;
+          case 2:
+            $state.go('item-entry', {'itemId': item.id});
+            break;
           default:
             return true;
         }
@@ -172,6 +175,7 @@ angular.module('starter.controllers', [])
 .controller('TodoDetailCtrl', function($scope, $stateParams, $rootScope) {
   $scope.item = $rootScope.itemIndex[$stateParams.itemId];
 
+
   $scope.completedText = function() {
     if ($scope.item.completed) {
       return " (Completed)";
@@ -214,20 +218,29 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('ItemEntryCtrl', function($scope, $state) {
-  $scope.name = "";
-  $scope.date = "";
-  $scope.time = "";
-  $scope.description = "";
+.controller('ItemEntryCtrl', function($scope, $state, $stateParams, $rootScope) {
+  var item = $rootScope.itemIndex[$stateParams.itemId];
 
-  var date1 = new Date();
-  $scope.test1 = date1;
-  var date2 = new Date();
-  date2.setHours(0, 0, 0, 0);
-  $scope.test2 = date2;
-  var date3 = new Date();
-  date3.setUTCHours(0, 0, 0, 0);
-  $scope.test3 = date3;
+  if (item == null) {
+    $scope.name = "";
+    $scope.date = "";
+    $scope.time = "";
+    $scope.description = "";
+  } else {
+    $scope.name = item.name;
+    $scope.description = item.description;
+    var dateTime = item.time;  // item.time stores date and time together
+    $scope.dateTime = "dateTime: " + dateTime;
+    var date = new Date();
+    date.setTime(dateTime);
+    date.setHours(0, 0, 0, 0);
+    $scope.date = date;
+    var time = new Date();
+    time.setTime(dateTime);
+    time.setFullYear(1970, 0, 1);
+    $scope.timeTest = time;
+    $scope.time = time;
+  }
 
   $scope.saveItem = function() {
     $state.go('tab.todo');
@@ -236,9 +249,4 @@ angular.module('starter.controllers', [])
   $scope.cancel = function() {
     $state.go('tab.todo');
   };
-
-  $scope.dateTest = function() {
-
-
-  }
 });
