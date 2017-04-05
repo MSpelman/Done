@@ -1,0 +1,13 @@
+<ion-view view-title="Done!">
+  <ion-header-bar class="bar bar-subheader">
+    <h2 class="title">Settings</h2>
+  </ion-header-bar>
+  <ion-content>
+    <ion-list>
+      <ion-toggle  ng-model="settings.enableFriends">
+        Enable Friends
+      </ion-toggle>
+      <button class="button button-full" ng-model="logoutButton" ng-style="logoutButton" ng-click="logoutFirebaseUser()">Logout: {{currentUser}}</button>
+    </ion-list>
+  </ion-content>
+</ion-view>
