@@ -218,6 +218,16 @@ angular.module('starter.services', [])
       this.items.push(newItem);
     };
 
+    this.removeItem = function(item) {
+      var newItems = [];
+      for (var i = 0; i < this.items.length; i++) {
+        if (item.id != this.items[i].id){
+          newItems.push(this.items[i]);
+        }
+      }
+      this.items = newItems;
+    };
+
     this.getItems = function() {
       return this.items;
     }

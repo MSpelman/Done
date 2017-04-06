@@ -40,6 +40,15 @@ angular.module('starter.controllers', [])
     $state.go('item-entry');
   };
 
+  $scope.deleteItem = function(item) {
+    var dateTime = item.time;  // item.time stores date and time together
+    var date = new Date();
+    date.setTime(dateTime);
+    date.setHours(0, 0, 0, 0);
+    $rootScope.schedule.getDay(date).removeItem(item);
+    delete $rootScope.itemIndex[item.id];
+  };
+
   $scope.showMenu = function(item) {
     event.preventDefault();
     var menu = $ionicActionSheet.show({
@@ -69,7 +78,7 @@ angular.module('starter.controllers', [])
         }
         return true;
       },
-      destructiveButtonClicked: function(item) {
+      destructiveButtonClicked: function() {
         var deletePopup = $ionicPopup.confirm({
           title: 'Delete Schedule Item?',
           template: 'Are you sure you want to delete this entry?',
@@ -79,7 +88,8 @@ angular.module('starter.controllers', [])
 
         deletePopup.then(function(res) {
           if (res) {
-            $scope.delete(item);
+            $scope.deleteItem(item);
+            $state.go('tab.todo');
           }
         });
 
@@ -281,9 +291,13 @@ angular.module('starter.controllers', [])
       item = new Item(id, $scope.name, $scope.description, dateTime, false, $scope.duration);
     } else {
       id = $scope.oldItem.id;
+      var oldDateTime = $scope.oldItem.time;  // item.time stores date and time together
+      var oldDate = new Date();
+      oldDate.setTime(oldDateTime);
+      oldDate.setHours(0, 0, 0, 0);
       item = new Item(id, $scope.name, $scope.description, dateTime, false, $scope.duration);
-
-      $scope.delete($scope.oldItem);
+      $rootScope.schedule.getDay(oldDate).removeItem($scope.oldItem);
+      delete $rootScope.itemIndex[item.id];
     }
 
     $rootScope.schedule.getDay(date).addItem(item);
@@ -307,10 +321,6 @@ angular.module('starter.controllers', [])
 
     $state.go('tab.todo');
   };
-
-  $scope.delete = function(item) {
-
-  }
 
   // This needs to be replaced with code that gets new id assigned by Firebase
   $scope.getId = function() {
