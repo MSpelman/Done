@@ -61,7 +61,8 @@ angular.module('starter.controllers', [])
             $scope.completeTask(item);
             break;
           case 2:
-            $state.go('item-entry', {'itemId': item.id});
+            $state.go('item-entry', {
+              'itemId': item.id});
             break;
           default:
             return true;
@@ -218,19 +219,21 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('ItemEntryCtrl', function($scope, $state, $stateParams, $rootScope) {
-  var item = $rootScope.itemIndex[$stateParams.itemId];
+.controller('ItemEntryCtrl', function($scope, $state, $stateParams, $rootScope, Item) {
 
-  if (item == null) {
+  if ($stateParams.itemId == null) {
     $scope.name = "";
     $scope.date = "";
     $scope.time = "";
+    $scope.duration = "";
     $scope.description = "";
+    $scope.new = true;
   } else {
+    var item = $rootScope.itemIndex[$stateParams.itemId];
     $scope.name = item.name;
     $scope.description = item.description;
+    $scope.duration = item.duration;
     var dateTime = item.time;  // item.time stores date and time together
-    $scope.dateTime = "dateTime: " + dateTime;
     var date = new Date();
     date.setTime(dateTime);
     date.setHours(0, 0, 0, 0);
@@ -238,15 +241,58 @@ angular.module('starter.controllers', [])
     var time = new Date();
     time.setTime(dateTime);
     time.setFullYear(1970, 0, 1);
-    $scope.timeTest = time;
     $scope.time = time;
+    $scope.new = false;
   }
 
   $scope.saveItem = function() {
+    if ($scope.new) {
+      var dateTime = new Date();
+      dateTime.setTime($scope.time);
+      var date = new Date();
+      date.setTime($scope.date);
+      var year = date.getFullYear();
+      var month = date.getMonth();
+      var day = date.getDate();
+      dateTime.setFullYear(year, month, day);
+      var id = $scope.getId();
+      if ($scope.duration < 1) $scope.duration = null;
+
+      item = new Item(id, $scope.name, $scope.description, dateTime, false, $scope.duration);
+
+      $rootScope.schedule.getDay(date).addItem(item);
+      $rootScope.itemIndex[item.id] = item;
+    } else {
+
+    }
+
+    $scope.name = "";
+    $scope.date = "";
+    $scope.time = "";
+    $scope.duration = "";
+    $scope.description = "";
+
     $state.go('tab.todo');
   };
 
   $scope.cancel = function() {
+    $scope.name = "";
+    $scope.date = "";
+    $scope.time = "";
+    $scope.description = "";
+    $scope.duration = "";
+
     $state.go('tab.todo');
   };
+
+  // This needs to be replaced with code that gets new id assigned by Firebase
+  $scope.getId = function() {
+    var availableId = 1;
+
+    while ($rootScope.itemIndex[availableId] != null) {
+      availableId++;
+    }
+
+    return availableId;
+  }
 });
