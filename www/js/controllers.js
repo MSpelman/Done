@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('TodoCtrl', function($scope, Schedule, $ionicActionSheet, $state, $rootScope, Calendar, Item, Day) {
+.controller('TodoCtrl', function($scope, Schedule, $ionicActionSheet, $state, $rootScope, Calendar, Item, Day, $ionicPopup) {
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
   // To listen for when this page is active (for example, to refresh data),
@@ -67,6 +67,22 @@ angular.module('starter.controllers', [])
           default:
             return true;
         }
+        return true;
+      },
+      destructiveButtonClicked: function(item) {
+        var deletePopup = $ionicPopup.confirm({
+          title: 'Delete Schedule Item?',
+          template: 'Are you sure you want to delete this entry?',
+          okType: 'button-default',
+          cancelType: 'button-calm'
+        });
+
+        deletePopup.then(function(res) {
+          if (res) {
+            $scope.delete(item);
+          }
+        });
+
         return true;
       }
     });
@@ -228,6 +244,7 @@ angular.module('starter.controllers', [])
     $scope.duration = "";
     $scope.description = "";
     $scope.new = true;
+    $scope.oldItem = null;
   } else {
     var item = $rootScope.itemIndex[$stateParams.itemId];
     $scope.name = item.name;
@@ -243,28 +260,34 @@ angular.module('starter.controllers', [])
     time.setFullYear(1970, 0, 1);
     $scope.time = time;
     $scope.new = false;
+    $scope.oldItem = item;
   }
 
   $scope.saveItem = function() {
-    if ($scope.new) {
-      var dateTime = new Date();
-      dateTime.setTime($scope.time);
-      var date = new Date();
-      date.setTime($scope.date);
-      var year = date.getFullYear();
-      var month = date.getMonth();
-      var day = date.getDate();
-      dateTime.setFullYear(year, month, day);
-      var id = $scope.getId();
-      if ($scope.duration < 1) $scope.duration = null;
+    var dateTime = new Date();
+    dateTime.setTime($scope.time);
+    var date = new Date();
+    date.setTime($scope.date);
+    var year = date.getFullYear();
+    var month = date.getMonth();
+    var day = date.getDate();
+    dateTime.setFullYear(year, month, day);
+    if ($scope.duration < 1) $scope.duration = null;
 
+    var id;
+    var item;
+    if ($scope.new) {
+      id = $scope.getId();
+      item = new Item(id, $scope.name, $scope.description, dateTime, false, $scope.duration);
+    } else {
+      id = $scope.oldItem.id;
       item = new Item(id, $scope.name, $scope.description, dateTime, false, $scope.duration);
 
-      $rootScope.schedule.getDay(date).addItem(item);
-      $rootScope.itemIndex[item.id] = item;
-    } else {
-
+      $scope.delete($scope.oldItem);
     }
+
+    $rootScope.schedule.getDay(date).addItem(item);
+    $rootScope.itemIndex[item.id] = item;
 
     $scope.name = "";
     $scope.date = "";
@@ -284,6 +307,10 @@ angular.module('starter.controllers', [])
 
     $state.go('tab.todo');
   };
+
+  $scope.delete = function(item) {
+
+  }
 
   // This needs to be replaced with code that gets new id assigned by Firebase
   $scope.getId = function() {
