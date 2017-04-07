@@ -7,8 +7,10 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
-.run(function($ionicPlatform,$ionicHistory) {
-  $ionicHistory.clearCache();
+
+
+.run(function($ionicPlatform, $rootScope, Calendar, Day, Item,$ionicHistory) {
+    $ionicHistory.clearCache();
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -21,6 +23,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
     }
+
   });
 })
 
@@ -123,17 +126,24 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         }}
     })
 
-    .state('item-entry', {
-      url: '/item-entry',
-      templateUrl: 'templates/item-entry.html',
-      controller: 'ItemEntryCtrl'
-    })
+
 
   .state('login',{
     url:'/login',
     templateUrl: 'templates/login.html',
     controller: 'LoginCtrl'
   })
+
+
+  .state('item-entry', {
+    url: '/item-entry',
+    templateUrl: 'templates/item-entry.html',
+    controller: 'ItemEntryCtrl',
+    params: {
+      'itemId': null
+    }
+  });
+
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/tab/todo');
