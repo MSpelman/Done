@@ -17,6 +17,10 @@
         <input type="time" ng-model="$parent.time">
       </label>
       <label class="item item-input">
+        <span class="input-label">Duration (mins)</span>
+        <input type="number" min="0" max="1440" step="5" ng-model="$parent.duration">
+      </label>
+      <label class="item item-input">
         <span class="input-label">Description</span>
         <textarea rows="5" ng-model="$parent.description"></textarea>
       </label>
@@ -25,12 +29,5 @@
       <button class="button button-positive" ng-click="saveItem()">Save</button>
       <button class="button" ng-click="cancel()">Cancel</button>
     </div>
-    <p>
-      {{name}}<br>
-      {{date}}<br>
-      {{time}}<br>
-      {{description}}<br>
-      {{now}}
-    </p>
   </ion-content>
 </ion-view>

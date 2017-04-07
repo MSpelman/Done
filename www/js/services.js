@@ -152,34 +152,35 @@ angular.module('starter.services', [])
 .factory('Calendar', function() {
   return function() {
     this.days = {};
+    this.itemIndex = {};
 
     this.addDay = function(newDay) {
       var date = newDay.getDate();
-      days[date] = newDay;
+      var dateKey = date.getTime();
+      this.days[dateKey] = newDay;
     };
 
     this.getDay = function(date) {
-
-    }
+      return this.days[date.getTime()];
+    };
 
     this.getToday = function() {
       var todayDate = new Date();
-      // This won't actually work; need to rethink how handle dates
-      // Update to use getDay()
-      return days[todayDate];
+      todayDate.setHours(0, 0, 0, 0);
+      return this.getDay(todayDate);
     };
 
     this.getTomorrow = function() {
+      var todayDate = new Date();
+      todayDate.setHours(0, 0, 0, 0);
+      var todayTime = todayDate.getTime();
+      var tomorrowTime = todayTime + 86400000;
       var tomorrowDate = new Date();
-      var tomorrowTime = tomorrowDate.getTime();
-      tomorrowTime = tomorrowTime + 86400000;
-      tomorrowDate = tomorrowDate.setTime(tomorrowTime);
-      // This won't actually work; need to rethink how handle dates
-      // Update to use getDay()
-      return days[tomorrowDate];
+      tomorrowDate.setTime(tomorrowTime);
+      return this.getDay(tomorrowDate);
     };
 
-    this.get = function(itemId) {
+    /*this.get = function(itemId) {
       var today = getToday();
       var tomorrow = getTomorrow();
 
@@ -194,7 +195,7 @@ angular.module('starter.services', [])
         }
       }
       return null;
-    };
+    }; */
   };
 })
 
@@ -217,6 +218,16 @@ angular.module('starter.services', [])
       this.items.push(newItem);
     };
 
+    this.removeItem = function(item) {
+      var newItems = [];
+      for (var i = 0; i < this.items.length; i++) {
+        if (item.id != this.items[i].id){
+          newItems.push(this.items[i]);
+        }
+      }
+      this.items = newItems;
+    };
+
     this.getItems = function() {
       return this.items;
     }
@@ -231,16 +242,17 @@ angular.module('starter.services', [])
  * old AndDone project) for the complete list of members.
  */
 .factory('Item', function() {
-  return function(id, name, description, date, time, isEvent) {
+  return function(id, name, description, time, timeless, duration) {
     this.id = id;
     this.name = name;
     this.description = description;
-    this.date = date;
-    this.time = time;
+    // this.date = date;
+    this.time = time;  // this should also include the date
+    this.timeless = timeless;
     this.completed = false;
-    this.event = isEvent;
-    this.beforeTasks = [];
-    this.duringTasks = [];
+    this.duration = duration;
+    //this.beforeTasks = [];
+    //this.duringTasks = [];
 
     this.completeTask = function() {
       this.completed = true;
@@ -250,12 +262,19 @@ angular.module('starter.services', [])
       return this.completed;
     };
 
-    this.getTime = function() {
-      if (this.time != null) return this.time;
-      return "";
+    this.displayTime = function() {
+      if (this.timeless) return "-";
+      var time = new Date();
+      time.setTime(this.time);
+      return time.toLocaleTimeString();
     };
 
-    this.addBeforeTask = function(newTask) {
+    this.isEvent = function() {
+      if (this.duration != null) return true;
+      return false;
+    };
+
+    /* this.addBeforeTask = function(newTask) {
       this.beforeTasks.push(newTask);
     };
 
@@ -269,6 +288,6 @@ angular.module('starter.services', [])
 
     this.getDuringTasks = function() {
       return this.duringTasks;
-    };
+    }; */
   };
 });
