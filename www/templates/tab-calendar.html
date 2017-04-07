@@ -3,6 +3,7 @@
     <h2 class="title">Calendar</h2>
   </ion-header-bar>
   <ion-content>
+    <div class="calendarBody">
     <ion-item class="item-button-left item-button-right">
       <button class="button button-icon" ng-click="prevDate()">
         <i class="icon ion-chevron-left"></i>
@@ -14,13 +15,135 @@
         <i class="icon ion-chevron-right"></i>
       </button>
     </ion-item>
+      <div class="calendarDayView">
+        <ion-list>
+          <ion-item class="calendarEvent" ng-repeat="chat in chats" type="item-text-wrap" href="#/tab/calendar/{{chat.id}}">
+            <h2>{{chat.name}}</h2>
+            <i class="icon ion-chevron-right icon-accessory"></i>
+          </ion-item>
+        </ion-list>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            12:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            1:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            2:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            3:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            4:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            5:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            6:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            7:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            8:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            9:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            10:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            11:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            12:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            1:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            2:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            3:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            4:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            5:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            6:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            7:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            8:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            9:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            10:00AM
+          </div>
+        </div>
+        <div class="calendarHour">
+          <div class="calendarTime">
+            11:00AM
+          </div>
+        </div>
+      </div>
     </div>
-    <ion-list>
-      <ion-item class="item-icon-right" ng-repeat="chat in chats" type="item-text-wrap" href="#/tab/calendar/{{chat.id}}">
-        <h2>{{chat.name}}</h2>
-        <i class="icon ion-chevron-right icon-accessory"></i>
-      </ion-item>
-    </ion-list>
     {{date}}
   </ion-content>
 </ion-view>

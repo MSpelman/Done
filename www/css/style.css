@@ -1,1 +1,30 @@
 /* Empty. Add your own CSS if you like */
+.calendarDateSwitch {
+  text-align: center
+}
+
+.calendarBody {
+  height: 500px;
+}
+
+.calendarDayView {
+  height: 75%;
+  overflow: scroll;
+}
+
+.calendarHour {
+  height: 20%;
+  border-top: 1px solid #000000;
+}
+.calendarTime {
+  width: 10%;
+}
+
+.calendarEvent {
+  margin-left: 25%;
+  margin-right: 25%;
+  margin-top: 20px;
+  height: 10%;
+  border: 1px solid #000000;
+  text-align: center;
+}
