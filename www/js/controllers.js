@@ -168,7 +168,7 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('CalendarCtrl', function($scope, Chats) {
+.controller('CalendarCtrl', function($scope, $rootScope, Chats, Schedule) {
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
   // To listen for when this page is active (for example, to refresh data),
@@ -180,7 +180,9 @@ angular.module('starter.controllers', [])
   $scope.chats = Chats.all();
   $scope.date = new Date();
   $scope.formattedDate = $scope.date.toDateString();
-  $scope.events = [ ];
+  $scope.events = Schedule.getToday();
+
+
 
   $scope.remove = function(chat) {
     Chats.remove(chat);
