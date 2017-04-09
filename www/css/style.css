@@ -8,23 +8,24 @@
 }
 
 .calendarDayView {
-  height: 75%;
-  overflow: scroll;
-}
-
-.calendarHour {
-  height: 20%;
-  border-top: 1px solid #000000;
-}
-.calendarTime {
-  width: 10%;
+  height: 500px;
 }
 
 .calendarEvent {
   margin-left: 25%;
   margin-right: 25%;
-  margin-top: 20px;
-  height: 10%;
-  border: 1px solid #000000;
+  margin-top: 60.5px;
+  height: 60px;
   text-align: center;
 }
+
+.calendarBackground {
+  margin-top: -360px;
+}
+
+.calendarHour {
+  height: 60px;
+  border-top: 1px solid #f2f2f2;
+}
+
+
