@@ -149,10 +149,10 @@ angular.module('starter.services', [])
  * be added as we add more functionality.  Please see the project proposal (and possibly the
  * old AndDone project) for the complete list of members.
  */
-.factory('Calendar', function() {
+.factory('Calendar', function(Day) {
   return function() {
     this.days = {};
-    this.itemIndex = {};
+    //this.itemIndex = {};
 
     this.addDay = function(newDay) {
       var date = newDay.getDate();
@@ -161,7 +161,14 @@ angular.module('starter.services', [])
     };
 
     this.getDay = function(date) {
-      return this.days[date.getTime()];
+      var day = this.days[date.getTime()];
+      if (day != null) {
+        return day;
+      } else {
+        day = new Day(date);
+        this.addDay(day)
+        return day;
+      }
     };
 
     this.getToday = function() {
