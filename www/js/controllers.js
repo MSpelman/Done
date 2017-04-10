@@ -9,10 +9,11 @@ angular.module('starter.controllers', [])
   //$scope.$on('$ionicView.enter', function(e) {
   //});
 
-  $rootScope.itemIndex = {};
-  $rootScope.schedule = loadData();
-  $rootScope.timeZone = new Date().getTimezoneOffset();
-
+  if (firebase.auth().currentUser == null) {
+    $rootScope.itemIndex = {};
+    $rootScope.schedule = loadData();
+    $rootScope.timeZone = new Date().getTimezoneOffset();
+  }
   $scope.today = $rootScope.schedule.getToday();
   $scope.tomorrow = $rootScope.schedule.getTomorrow();
 
@@ -244,7 +245,6 @@ angular.module('starter.controllers', [])
 })
 
 .controller('SettingsCtrl', function($scope,$state,$ionicLoading,$stateParams) {
-
   $scope.settings = {
     enableFriends: null
   }
@@ -252,90 +252,80 @@ angular.module('starter.controllers', [])
   //   location.reload();
   //   $stateParams.refresh = 0;
   // }
+  if(firebase.auth().currentUser){
+    $scope.todisplay="Logout: "+firebase.auth().currentUser.email;
+  } else {
+    $scope.todisplay="Login";
+  }
+
+  $scope.onClick = function () {
     if(firebase.auth().currentUser){
-      $scope.todisplay="Logout: "+firebase.auth().currentUser.email;
-    }
-    else {
-      $scope.todisplay="Login";
-    }
-
-
-    $scope.onClick = function () {
-      if(firebase.auth().currentUser){
-        firebase.auth().signOut().then(function () {
-          console.log('Signed Out Firebase user');
-          $ionicLoading.show({template: 'Logout successful!', noBackdrop: true, duration: 1000});
-         location.reload();
-        }).catch(function (error) {
-          console.error('Sign Out Error', error);
-          $ionicLoading.show({template: 'Logout Unsuccessful!', noBackdrop: true, duration: 1000});
-        })         ;
-      }
-      else {
-        $state.go('login');
-      }
-
-
-    }
-
-
-})
-  .controller('UserSettingsCtrl', function($scope,$state,$ionicLoading) {
-    console.log("usersetting");
-
-$scope.currentUser=firebase.auth().currentUser.email;
-    $scope.logoutFirebaseUser = function () {
       firebase.auth().signOut().then(function () {
         console.log('Signed Out Firebase user');
         $ionicLoading.show({template: 'Logout successful!', noBackdrop: true, duration: 1000});
-        $state.go('tabs.settings');
+        location.reload();
       }).catch(function (error) {
         console.error('Sign Out Error', error);
         $ionicLoading.show({template: 'Logout Unsuccessful!', noBackdrop: true, duration: 1000});
       })         ;
+    } else {
+      $state.go('login');
     }
+  }
+})
 
-  })
+.controller('UserSettingsCtrl', function($scope,$state,$ionicLoading) {
+  $scope.currentUser=firebase.auth().currentUser.email;
+  $scope.logoutFirebaseUser = function () {
+    firebase.auth().signOut().then(function () {
+      console.log('Signed Out Firebase user');
+      $ionicLoading.show({template: 'Logout successful!', noBackdrop: true, duration: 1000});
+      $state.go('tabs.settings');
+    }).catch(function (error) {
+      console.error('Sign Out Error', error);
+      $ionicLoading.show({template: 'Logout Unsuccessful!', noBackdrop: true, duration: 1000});
+    });
+  }
+})
 
-  .controller('LoginCtrl', function($scope,$state,$ionicLoading) {
+.controller('LoginCtrl', function($scope,$state,$ionicLoading, $rootScope, Calendar) {
+  $rootScope.itemIndex = {};
+  $rootScope.timeZone = new Date().getTimezoneOffset();
 
-    $scope.username = "";
-    $scope.password = "";
-    $scope.loginFirebaseUser = function () {
-      return firebase.auth().signInWithEmailAndPassword($scope.username, $scope.password).then(function () {
-        $ionicLoading.show({template: 'Login Successfully!', noBackdrop: true, duration: 1000});
-        $state.go('tab.settings', {refresh: 1});
-      })
+  $scope.username = "";
+  $scope.password = "";
 
-        .catch(function (error) {
+  $scope.loginFirebaseUser = function () {
+    return firebase.auth().signInWithEmailAndPassword($scope.username, $scope.password).then(function () {
+      $ionicLoading.show({template: 'Login Successfully!', noBackdrop: true, duration: 1000});
+      $state.go('tab.settings', {refresh: 1});
+    }).catch(function (error) {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      if (errorCode == 'auth/wrong-password') {
+        $ionicLoading.show({template: 'Wrong password! Try again!', noBackdrop: true, duration: 1000})
+      }
+    })
+  };
 
-          var errorCode = error.code;
-          var errorMessage = error.message;
-          if (errorCode == 'auth/wrong-password') {
-            $ionicLoading.show({template: 'Wrong password! Try again!', noBackdrop: true, duration: 1000})
-
-          }
-
-
-        })
-    }
-
-    $scope.createFirebaseUser = function () {
-      return firebase.auth().createUserWithEmailAndPassword($scope.username, $scope.password).then(function () {
-        $ionicLoading.show({template: 'Created Firebase User!', noBackdrop: true, duration: 1000});
-      }).catch(function (error) {
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        if (errorCode == 'auth/email-already-in-use') {
-          $ionicLoading.show({template: 'Email already in use! Try again!', noBackdrop: true, duration: 1000})
-        }
-        else if (errorCode == 'auth/weak-password') {
-          $ionicLoading.show({template: 'Password is weak! Try again!', noBackdrop: true, duration: 1000})
-        }
-        ;
-      });
-    }
-  })
+  $scope.createFirebaseUser = function () {
+    return firebase.auth().createUserWithEmailAndPassword($scope.username, $scope.password).then(function () {
+      $rootScope.user = firebase.auth().currentUser;
+      $rootScope.schedule = new Calendar();
+      console.log("CreateUser");
+      /* Where I am - need to add schedule to Firebase */
+      $ionicLoading.show({template: 'Created Firebase User!', noBackdrop: true, duration: 1000});
+    }).catch(function (error) {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      if (errorCode == 'auth/email-already-in-use') {
+        $ionicLoading.show({template: 'Email already in use! Try again!', noBackdrop: true, duration: 1000})
+      } else if (errorCode == 'auth/weak-password') {
+        $ionicLoading.show({template: 'Password is weak! Try again!', noBackdrop: true, duration: 1000})
+      }
+    });
+  }
+})
 
 .controller('ItemEntryCtrl', function($scope, $state, $stateParams, $rootScope, Item) {
 
