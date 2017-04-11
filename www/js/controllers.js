@@ -10,10 +10,12 @@ angular.module('starter.controllers', [])
   //});
 
   if (firebase.auth().currentUser == null) {
+    console.log("TodoCtrl: currentUser is null!");
     $rootScope.itemIndex = {};
     $rootScope.schedule = loadData();
     $rootScope.timeZone = new Date().getTimezoneOffset();
   }
+  console.log(JSON.stringify($rootScope.schedule));
   $scope.today = $rootScope.schedule.getToday();
   $scope.tomorrow = $rootScope.schedule.getTomorrow();
 
@@ -247,7 +249,7 @@ angular.module('starter.controllers', [])
 .controller('SettingsCtrl', function($scope,$state,$ionicLoading,$stateParams) {
   $scope.settings = {
     enableFriends: null
-  }
+  };
   // if ($stateParams.refresh ==1 ) {
   //   location.reload();
   //   $stateParams.refresh = 0;
@@ -288,7 +290,7 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('LoginCtrl', function($scope,$state,$ionicLoading, $rootScope, Calendar) {
+.controller('LoginCtrl', function($scope,$state,$ionicLoading, $rootScope, Calendar, Item) {
   $rootScope.itemIndex = {};
   $rootScope.timeZone = new Date().getTimezoneOffset();
 
@@ -297,6 +299,8 @@ angular.module('starter.controllers', [])
 
   $scope.loginFirebaseUser = function () {
     return firebase.auth().signInWithEmailAndPassword($scope.username, $scope.password).then(function () {
+      $rootScope.user = firebase.auth().currentUser;
+      $rootScope.schedule = getSchedule();
       $ionicLoading.show({template: 'Login Successfully!', noBackdrop: true, duration: 1000});
       $state.go('tab.settings', {refresh: 1});
     }).catch(function (error) {
@@ -312,8 +316,7 @@ angular.module('starter.controllers', [])
     return firebase.auth().createUserWithEmailAndPassword($scope.username, $scope.password).then(function () {
       $rootScope.user = firebase.auth().currentUser;
       $rootScope.schedule = new Calendar();
-      console.log("CreateUser");
-      /* Where I am - need to add schedule to Firebase */
+      firebase.database().ref('schedules/ + user.id').set($rootScope.schedule);
       $ionicLoading.show({template: 'Created Firebase User!', noBackdrop: true, duration: 1000});
     }).catch(function (error) {
       var errorCode = error.code;
@@ -324,6 +327,25 @@ angular.module('starter.controllers', [])
         $ionicLoading.show({template: 'Password is weak! Try again!', noBackdrop: true, duration: 1000})
       }
     });
+  };
+
+  function getSchedule() {
+    var schedule = new Calendar();
+    firebase.database().ref('schedules/' + $rootScope.user.uid).once('value').then(function(snapshot) {
+      snapshot.forEach(function(itemSnapshot) {
+        //var itemKey = itemSnapshot.key;
+        var itemData = itemSnapshot.val();
+        console.log(JSON.stringify(itemData));
+        var time = new Date();
+        time.setTime(itemData.time);
+        var item = new Item(itemData.id, itemData.name, itemData.description, time, itemData.timeless, itemData.duration);
+        var date = item.getDate();
+        var day = schedule.getDay(date);  // Creates day and adds to schedule if does not exist
+        day.addItem(item);
+        $rootScope.itemIndex[item.id] = item;
+      });
+    });
+    return schedule;
   }
 })
 
@@ -342,6 +364,7 @@ angular.module('starter.controllers', [])
     $scope.name = item.name;
     $scope.description = item.description;
     $scope.duration = item.duration;
+    // Update code to use getDate() from Item factory
     var dateTime = item.time;  // item.time stores date and time together
     var date = new Date();
     date.setTime(dateTime);
@@ -369,8 +392,20 @@ angular.module('starter.controllers', [])
     var id;
     var item;
     if ($scope.new) {
-      id = $scope.getId();
+      var newItemRef = firebase.database().ref('schedules/' + $rootScope.user.uid).push();
+      id = newItemRef.key;
       item = new Item(id, $scope.name, $scope.description, dateTime, false, $scope.duration);
+      console.log(dateTime.getTime());
+      console.log(item.time.getTime());
+      newItemRef.set({
+        id: item.id,
+        name: item.name,
+        description: item.description,
+        time: item.time.getTime(),
+        timeless: item.timeless,
+        completed: item.completed,
+        duration: item.duration
+      });
     } else {
       id = $scope.oldItem.id;
       var oldDateTime = $scope.oldItem.time;  // item.time stores date and time together

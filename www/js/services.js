@@ -166,7 +166,7 @@ angular.module('starter.services', [])
         return day;
       } else {
         day = new Day(date);
-        this.addDay(day)
+        this.addDay(day);
         return day;
       }
     };
@@ -280,6 +280,14 @@ angular.module('starter.services', [])
       if (this.duration != null) return true;
       return false;
     };
+
+    this.getDate = function() {
+      var dateTime = this.time;  // item.time stores date and time together
+      var date = new Date();
+      date.setTime(dateTime);
+      date.setHours(0, 0, 0, 0);
+      return date;
+    }
 
     /* this.addBeforeTask = function(newTask) {
       this.beforeTasks.push(newTask);
