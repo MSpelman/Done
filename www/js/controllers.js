@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('TodoCtrl', function($scope, Schedule, $ionicActionSheet, $state, $rootScope, Calendar, Item, Day, $ionicPopup) {
+.controller('TodoCtrl', function($scope, Schedule, $ionicActionSheet, $state, $rootScope, Calendar, Item, Day, $ionicPopup, $ionicLoading) {
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
   // To listen for when this page is active (for example, to refresh data),
@@ -10,15 +10,18 @@ angular.module('starter.controllers', [])
   //});
 
   if (firebase.auth().currentUser == null) {
-    console.log("TodoCtrl: currentUser is null!");
-    $rootScope.itemIndex = {};
-    $rootScope.schedule = loadData();
-    $rootScope.timeZone = new Date().getTimezoneOffset();
-  }
-  console.log(JSON.stringify($rootScope.schedule));
-  $scope.today = $rootScope.schedule.getToday();
-  $scope.tomorrow = $rootScope.schedule.getTomorrow();
+    $ionicLoading.show({
+      template: 'Please log in',
+      noBackdrop: true,
+      duration: 1000
+    }).then(function() {
 
+    });
+    $state.go('login');
+  } else {
+    $scope.today = $rootScope.schedule.getToday();
+    $scope.tomorrow = $rootScope.schedule.getTomorrow();
+  }
 
   $scope.getColor = function (item) {
     if (item.completed == true) return "gray";
