@@ -7,10 +7,8 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
-
-
 .run(function($ionicPlatform, $rootScope, Calendar, Day, Item,$ionicHistory) {
-    $ionicHistory.clearCache();
+  $ionicHistory.clearCache();
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -37,103 +35,102 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
   $stateProvider
 
   // setup an abstract state for the tabs directive
-    .state('tab', {
-      url: '/tab',
-      abstract: true,
-      templateUrl: 'templates/tabs.html'
-    })
+  .state('tab', {
+    url: '/tab',
+    abstract: true,
+    templateUrl: 'templates/tabs.html'
+  })
 
-    // Each tab has its own nav history stack:
-    .state('tab.todo', {
-      url: '/todo',
-      views: {
-        'tab-todo': {
-          templateUrl: 'templates/tab-todo.html',
-          controller: 'TodoCtrl'
-        }
+  // Each tab has its own nav history stack:
+  .state('tab.todo', {
+    url: '/todo',
+    views: {
+      'tab-todo': {
+        templateUrl: 'templates/tab-todo.html',
+        controller: 'TodoCtrl'
       }
-    })
+    }
+  })
 
-    .state('tab.calendar', {
-      url: '/calendar',
-      views: {
-        'tab-calendar': {
-          templateUrl: 'templates/tab-calendar.html',
-          controller: 'CalendarCtrl'
-        }
+  .state('tab.calendar', {
+    url: '/calendar',
+    views: {
+      'tab-calendar': {
+        templateUrl: 'templates/tab-calendar.html',
+        controller: 'CalendarCtrl'
       }
-    })
+    }
+  })
 
-    .state('tab.todo-detail', {
-      url: '/todo/:itemId',
-      views: {
-        'tab-todo': {
-          templateUrl: 'templates/todo-detail.html',
-          controller: 'TodoDetailCtrl'
-        }
-      },
-      params: {
-        'itemId': null
+  .state('tab.todo-detail', {
+    url: '/todo/:itemId',
+    views: {
+      'tab-todo': {
+        templateUrl: 'templates/todo-detail.html',
+        controller: 'TodoDetailCtrl'
       }
-    })
+    },
+    params: {
+      'itemId': null
+    }
+  })
 
-    .state('tab.calendar-detail', {
-      url: '/calendar/:chatId',
-      views: {
-        'tab-calendar': {
-          templateUrl: 'templates/calendar-detail.html',
-          controller: 'CalendarDetailCtrl'
-        }
+  .state('tab.calendar-detail', {
+    url: '/calendar/:chatId',
+    views: {
+      'tab-calendar': {
+        templateUrl: 'templates/calendar-detail.html',
+        controller: 'CalendarDetailCtrl'
       }
-    })
+    }
+  })
 
-    .state('tab.metrics', {
-      url: '/metrics',
-      views: {
-        'tab-metrics': {
-          templateUrl: 'templates/tab-metrics.html',
-          controller: 'MetricsCtrl'
-        }
+  .state('tab.metrics', {
+    url: '/metrics',
+    views: {
+      'tab-metrics': {
+        templateUrl: 'templates/tab-metrics.html',
+        controller: 'MetricsCtrl'
       }
-    })
+    }
+  })
 
-    .state('tab.contacts', {
-      url: '/contacts',
-      views: {
-        'tab-contacts': {
-          templateUrl: 'templates/tab-contacts.html',
-          controller: 'ContactsCtrl'
-        }
+  .state('tab.contacts', {
+    url: '/contacts',
+    views: {
+      'tab-contacts': {
+        templateUrl: 'templates/tab-contacts.html',
+        controller: 'ContactsCtrl'
       }
-    })
+    }
+  })
 
-    .state('tab.settings', {
-      url: '/settings',
-      views: {
-        'tab-settings': {
-          templateUrl: 'templates/tab-settings.html',
-          controller: 'SettingsCtrl'
-      }},
-      params: {'refresh': -1},
-    })
-    .state('tab.userSettings', {
-      url: '/userSettings',
-      views: {
-        'tab-userSettings': {
-          templateUrl: 'templates/tab-userSettings.html',
-          controller: 'UserSettingsCtrl'
+  .state('tab.settings', {
+    url: '/settings',
+    views: {
+      'tab-settings': {
+        templateUrl: 'templates/tab-settings.html',
+        controller: 'SettingsCtrl'
+      }
+    },
+    params: {'refresh': -1},
+  })
 
-        }}
-    })
-
-
+  .state('tab.userSettings', {
+    url: '/userSettings',
+    views: {
+      'tab-userSettings': {
+        templateUrl: 'templates/tab-userSettings.html',
+        controller: 'UserSettingsCtrl'
+      }
+    }
+  })
 
   .state('login',{
     url:'/login',
     templateUrl: 'templates/login.html',
     controller: 'LoginCtrl'
   })
-
 
   .state('item-entry', {
     url: '/item-entry',
@@ -144,8 +141,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     }
   });
 
-
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/todo');
+  $urlRouterProvider.otherwise('/login');
 
 });
