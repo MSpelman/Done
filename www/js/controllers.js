@@ -408,6 +408,7 @@ angular.module('starter.controllers', [])
       });
     } else {
       id = $scope.oldItem.id;
+      var itemRef = firebase.database().ref('schedules/' + $rootScope.user.uid + '/' + id);
       var oldDateTime = $scope.oldItem.time;  // item.time stores date and time together
       var oldDate = new Date();
       oldDate.setTime(oldDateTime);
@@ -415,6 +416,15 @@ angular.module('starter.controllers', [])
       item = new Item(id, $scope.name, $scope.description, dateTime, false, $scope.duration);
       $rootScope.schedule.getDay(oldDate).removeItem($scope.oldItem);
       delete $rootScope.itemIndex[item.id];
+      itemRef.set({
+        id: item.id,
+        name: item.name,
+        description: item.description,
+        time: item.time.getTime(),
+        timeless: item.timeless,
+        completed: item.completed,
+        duration: item.duration
+      });
     }
 
     $rootScope.schedule.getDay(date).addItem(item);
