@@ -4,6 +4,7 @@ angular.module('starter.services', [])
  * by Firebase.
  */
 
+// Test data: do not use in new code
 .factory('Chats', function() {
   // Might use a resource here that returns a JSON array
 
@@ -53,6 +54,7 @@ angular.module('starter.services', [])
   };
 })
 
+// Test Data: Do not use in new code
 .factory('Schedule', function() {
   // Might use a resource here that returns a JSON array
 
@@ -160,6 +162,8 @@ angular.module('starter.services', [])
       this.days[dateKey] = newDay;
     };
 
+    // getDay() creates a new Day record and adds it to the schedule
+    // if there is not already a Day record for that date
     this.getDay = function(date) {
       var day = this.days[date.getTime()];
       if (day != null) {
@@ -281,13 +285,25 @@ angular.module('starter.services', [])
       return false;
     };
 
+    // The time field stores the date and time together
+    // this splits out the date portion and returns it
     this.getDate = function() {
       var dateTime = this.time;  // item.time stores date and time together
       var date = new Date();
       date.setTime(dateTime);
       date.setHours(0, 0, 0, 0);
       return date;
-    }
+    };
+
+    // The time field stores the date and time together
+    // this splits out the time portion and returns it
+    this.getTime = function() {
+      var dateTime = this.time;  // item.time stores date and time together
+      var time = new Date();
+      time.setTime(dateTime);
+      time.setFullYear(1970, 0, 1);
+      return time;
+    };
 
     /* this.addBeforeTask = function(newTask) {
       this.beforeTasks.push(newTask);
