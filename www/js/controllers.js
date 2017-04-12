@@ -275,7 +275,7 @@ angular.module('starter.controllers', [])
   if(firebase.auth().currentUser){
     $scope.todisplay="Logout: "+firebase.auth().currentUser.email;
   } else {
-    $scope.todisplay="Login";
+    $state.go('login');
   }
 
   $scope.onClick = function () {
@@ -284,6 +284,7 @@ angular.module('starter.controllers', [])
         console.log('Signed Out Firebase user');
         $ionicLoading.show({template: 'Logout successful!', noBackdrop: true, duration: 1000});
         location.reload();
+        $state.go('login');
       }).catch(function (error) {
         console.error('Sign Out Error', error);
         $ionicLoading.show({template: 'Logout Unsuccessful!', noBackdrop: true, duration: 1000});
@@ -294,19 +295,7 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('UserSettingsCtrl', function($scope,$state,$ionicLoading) {
-  $scope.currentUser=firebase.auth().currentUser.email;
-  $scope.logoutFirebaseUser = function () {
-    firebase.auth().signOut().then(function () {
-      console.log('Signed Out Firebase user');
-      $ionicLoading.show({template: 'Logout successful!', noBackdrop: true, duration: 1000});
-      $state.go('tabs.settings');
-    }).catch(function (error) {
-      console.error('Sign Out Error', error);
-      $ionicLoading.show({template: 'Logout Unsuccessful!', noBackdrop: true, duration: 1000});
-    });
-  }
-})
+
 
 .controller('LoginCtrl', function($scope,$state,$ionicLoading, $rootScope, Calendar, Item) {
   $rootScope.itemIndex = {};
@@ -332,10 +321,14 @@ angular.module('starter.controllers', [])
 
   $scope.createFirebaseUser = function () {
     return firebase.auth().createUserWithEmailAndPassword($scope.username, $scope.password).then(function () {
+      $ionicLoading.show({template: 'Created Firebase User!', noBackdrop: true, duration: 1000});
+      firebase.auth().signInWithEmailAndPassword($scope.username, $scope.password);
+
       $rootScope.user = firebase.auth().currentUser;
       $rootScope.schedule = new Calendar();
       firebase.database().ref('schedules/ + user.id').set($rootScope.schedule);
-      $ionicLoading.show({template: 'Created Firebase User!', noBackdrop: true, duration: 1000});
+      $state.go('tab.settings', {refresh: 1});
+
     }).catch(function (error) {
       var errorCode = error.code;
       var errorMessage = error.message;
