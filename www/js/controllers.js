@@ -321,14 +321,12 @@ angular.module('starter.controllers', [])
 
   $scope.createFirebaseUser = function () {
     return firebase.auth().createUserWithEmailAndPassword($scope.username, $scope.password).then(function () {
-      $ionicLoading.show({template: 'Created Firebase User!', noBackdrop: true, duration: 1000});
-      firebase.auth().signInWithEmailAndPassword($scope.username, $scope.password);
-
-      $rootScope.user = firebase.auth().currentUser;
-      $rootScope.schedule = new Calendar();
-      firebase.database().ref('schedules/ + user.id').set($rootScope.schedule);
-      $state.go('tab.settings', {refresh: 1});
-
+      firebase.auth().signInWithEmailAndPassword($scope.username, $scope.password).then(function() {
+        $rootScope.user = firebase.auth().currentUser;
+        $rootScope.schedule = new Calendar();
+        $ionicLoading.show({template: 'Created Firebase User!', noBackdrop: true, duration: 1000});
+        $state.go('tab.settings', {refresh: 1});
+      });
     }).catch(function (error) {
       var errorCode = error.code;
       var errorMessage = error.message;
