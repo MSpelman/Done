@@ -94,6 +94,9 @@ angular.module('starter.controllers', [])
         deletePopup.then(function(res) {
           if (res) {
             $scope.deleteItem(item);
+            var key = item.id;
+            var itemRef = firebase.database().ref('schedules/' + $rootScope.user.uid + '/' + key);
+            itemRef.remove();
             $state.go('tab.todo');
           }
         });
@@ -335,7 +338,6 @@ angular.module('starter.controllers', [])
       snapshot.forEach(function(itemSnapshot) {
         //var itemKey = itemSnapshot.key;
         var itemData = itemSnapshot.val();
-        console.log(JSON.stringify(itemData));
         var time = new Date();
         time.setTime(itemData.time);
         var item = new Item(itemData.id, itemData.name, itemData.description, time, itemData.timeless, itemData.duration);
@@ -395,8 +397,6 @@ angular.module('starter.controllers', [])
       var newItemRef = firebase.database().ref('schedules/' + $rootScope.user.uid).push();
       id = newItemRef.key;
       item = new Item(id, $scope.name, $scope.description, dateTime, false, $scope.duration);
-      console.log(dateTime.getTime());
-      console.log(item.time.getTime());
       newItemRef.set({
         id: item.id,
         name: item.name,
