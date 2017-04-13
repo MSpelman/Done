@@ -89,7 +89,14 @@ angular.module('starter.controllers', [])
             break;
           case 2:
             $state.go('item-entry', {
-              'itemId': item.id});
+              'itemId': item.id
+            });
+            break;
+          case 3:
+            $state.go('item-entry', {
+              'itemId': item.id,
+              'copy': true
+            });
             break;
           default:
             return true;
@@ -295,8 +302,6 @@ angular.module('starter.controllers', [])
   }
 })
 
-
-
 .controller('LoginCtrl', function($scope,$state,$ionicLoading, $rootScope, Calendar, Item) {
   $rootScope.itemIndex = {};
   $rootScope.timeZone = new Date().getTimezoneOffset();
@@ -359,7 +364,7 @@ angular.module('starter.controllers', [])
 })
 
 .controller('ItemEntryCtrl', function($scope, $state, $stateParams, $rootScope, Item) {
-
+  $scope.copy = false;
   if ($stateParams.itemId == null) {
     // Case where adding a new item
     $scope.name = "";
@@ -388,6 +393,7 @@ angular.module('starter.controllers', [])
     $scope.time = item.getTime();
     $scope.new = false;
     $scope.oldItem = item;
+    if ($stateParams.copy == true) $scope.copy = true;
   }
 
   // Code called when save button pressed
@@ -404,7 +410,7 @@ angular.module('starter.controllers', [])
 
     var id;
     var item;
-    if ($scope.new) {
+    if ($scope.new || $scope.copy) {
       // Saving new item
       var newItemRef = firebase.database().ref('schedules/' + $rootScope.user.uid).push();
       id = newItemRef.key;
