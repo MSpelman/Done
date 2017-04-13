@@ -227,6 +227,10 @@ angular.module('starter.services', [])
 
     this.addItem = function(newItem) {
       this.items.push(newItem);
+      // Sort array of items in time order
+      this.items.sort(function(a, b) {
+        return (a.getTime() - b.getTime());
+      });
     };
 
     this.removeItem = function(item) {
