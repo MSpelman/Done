@@ -365,6 +365,7 @@ angular.module('starter.controllers', [])
 
 .controller('ItemEntryCtrl', function($scope, $state, $stateParams, $rootScope, Item) {
   $scope.copy = false;
+  $scope.title = "Edit Item";
   if ($stateParams.itemId == null) {
     // Case where adding a new item
     $scope.name = "";
@@ -374,6 +375,7 @@ angular.module('starter.controllers', [])
     $scope.description = "";
     $scope.new = true;
     $scope.oldItem = null;
+    $scope.title = "Add Item";
   } else {
     // Case where editing an existing item
     var item = $rootScope.itemIndex[$stateParams.itemId];
@@ -393,7 +395,10 @@ angular.module('starter.controllers', [])
     $scope.time = item.getTime();
     $scope.new = false;
     $scope.oldItem = item;
-    if ($stateParams.copy == true) $scope.copy = true;
+    if ($stateParams.copy == true) {
+      $scope.copy = true;
+      $scope.title = "Copy Item";
+    }
   }
 
   // Code called when save button pressed
