@@ -8,6 +8,7 @@ angular.module('starter.controllers', [])
   //
   //$scope.$on('$ionicView.enter', function(e) {
   //});
+  $scope.completeText = null;
 
   if (firebase.auth().currentUser == null) {
     // Require user to login
@@ -46,7 +47,7 @@ angular.module('starter.controllers', [])
 
   // Marks a task as completed
   $scope.completeTask = function(item) {
-    item.completed = true;
+    item.completeTask();
     event.preventDefault();
   };
 
@@ -69,9 +70,15 @@ angular.module('starter.controllers', [])
   // Displays the slide over menu with options associated with schedule items
   $scope.showMenu = function(item) {
     event.preventDefault();
+    if (item.isCompleted()) {
+      $scope.completeText = "Uncomplete Task";
+    } else {
+      $scope.completeText = "Complete Task";
+    }
+    $scope.completeText
     var menu = $ionicActionSheet.show({
       buttons: [
-        {text: 'Complete Task'},
+        {text: $scope.completeText},
         {text: 'Start Task'},
         {text: 'Edit'},
         {text: 'Copy'}
@@ -85,7 +92,11 @@ angular.module('starter.controllers', [])
       buttonClicked: function(index) {
         switch (index) {
           case 0:
-            $scope.completeTask(item);
+            if (item.isCompleted()) {
+              item.uncompleteTask();
+            } else {
+              $scope.completeTask(item);
+            }
             break;
           case 2:
             $state.go('item-entry', {

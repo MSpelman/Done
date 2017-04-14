@@ -277,6 +277,10 @@ angular.module('starter.services', [])
       return this.completed;
     };
 
+    this.uncompleteTask = function() {
+      this.completed = false;
+    };
+
     this.displayTime = function() {
       if (this.timeless) return "-";
       var time = new Date();
