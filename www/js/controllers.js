@@ -48,6 +48,18 @@ angular.module('starter.controllers', [])
   // Marks a task as completed
   $scope.completeTask = function(item) {
     item.completeTask();
+    var id = item.id;
+    var itemRef = firebase.database().ref('schedules/' + $rootScope.user.uid + '/' + id);
+    itemRef.update({completed: true});
+    event.preventDefault();
+  };
+
+  // Marks a task as un-completed
+  $scope.uncompleteTask = function(item) {
+    item.uncompleteTask();
+    var id = item.id;
+    var itemRef = firebase.database().ref('schedules/' + $rootScope.user.uid + '/' + id);
+    itemRef.update({completed: false});
     event.preventDefault();
   };
 
@@ -93,7 +105,7 @@ angular.module('starter.controllers', [])
         switch (index) {
           case 0:
             if (item.isCompleted()) {
-              item.uncompleteTask();
+              $scope.uncompleteTask(item);
             } else {
               $scope.completeTask(item);
             }
@@ -364,6 +376,7 @@ angular.module('starter.controllers', [])
         var time = new Date();
         time.setTime(itemData.time);  // itemData.time is a long int, need to convert to Date object
         var item = new Item(itemData.id, itemData.name, itemData.description, time, itemData.timeless, itemData.duration);
+        if (itemData.completed == true) item.completeTask();
         var date = item.getDate();
         var day = schedule.getDay(date);  // getDay will create day and adds to schedule if does not exist
         day.addItem(item);
