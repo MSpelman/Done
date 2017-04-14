@@ -137,7 +137,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     templateUrl: 'templates/item-entry.html',
     controller: 'ItemEntryCtrl',
     params: {
-      'itemId': null
+      'itemId': null,
+      'copy': null
     }
   });
 

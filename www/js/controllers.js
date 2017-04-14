@@ -8,6 +8,7 @@ angular.module('starter.controllers', [])
   //
   //$scope.$on('$ionicView.enter', function(e) {
   //});
+  $scope.completeText = null;
 
   if (firebase.auth().currentUser == null) {
     // Require user to login
@@ -46,7 +47,7 @@ angular.module('starter.controllers', [])
 
   // Marks a task as completed
   $scope.completeTask = function(item) {
-    item.completed = true;
+    item.completeTask();
     event.preventDefault();
   };
 
@@ -69,9 +70,15 @@ angular.module('starter.controllers', [])
   // Displays the slide over menu with options associated with schedule items
   $scope.showMenu = function(item) {
     event.preventDefault();
+    if (item.isCompleted()) {
+      $scope.completeText = "Uncomplete Task";
+    } else {
+      $scope.completeText = "Complete Task";
+    }
+    $scope.completeText
     var menu = $ionicActionSheet.show({
       buttons: [
-        {text: 'Complete Task'},
+        {text: $scope.completeText},
         {text: 'Start Task'},
         {text: 'Edit'},
         {text: 'Copy'}
@@ -85,11 +92,22 @@ angular.module('starter.controllers', [])
       buttonClicked: function(index) {
         switch (index) {
           case 0:
-            $scope.completeTask(item);
+            if (item.isCompleted()) {
+              item.uncompleteTask();
+            } else {
+              $scope.completeTask(item);
+            }
             break;
           case 2:
             $state.go('item-entry', {
-              'itemId': item.id});
+              'itemId': item.id
+            });
+            break;
+          case 3:
+            $state.go('item-entry', {
+              'itemId': item.id,
+              'copy': true
+            });
             break;
           default:
             return true;
@@ -295,8 +313,6 @@ angular.module('starter.controllers', [])
   }
 })
 
-
-
 .controller('LoginCtrl', function($scope,$state,$ionicLoading, $rootScope, Calendar, Item) {
   $rootScope.itemIndex = {};
   $rootScope.timeZone = new Date().getTimezoneOffset();
@@ -359,7 +375,8 @@ angular.module('starter.controllers', [])
 })
 
 .controller('ItemEntryCtrl', function($scope, $state, $stateParams, $rootScope, Item) {
-
+  $scope.copy = false;
+  $scope.title = "Edit Item";
   if ($stateParams.itemId == null) {
     // Case where adding a new item
     $scope.name = "";
@@ -369,6 +386,7 @@ angular.module('starter.controllers', [])
     $scope.description = "";
     $scope.new = true;
     $scope.oldItem = null;
+    $scope.title = "Add Item";
   } else {
     // Case where editing an existing item
     var item = $rootScope.itemIndex[$stateParams.itemId];
@@ -388,6 +406,10 @@ angular.module('starter.controllers', [])
     $scope.time = item.getTime();
     $scope.new = false;
     $scope.oldItem = item;
+    if ($stateParams.copy == true) {
+      $scope.copy = true;
+      $scope.title = "Copy Item";
+    }
   }
 
   // Code called when save button pressed
@@ -404,7 +426,7 @@ angular.module('starter.controllers', [])
 
     var id;
     var item;
-    if ($scope.new) {
+    if ($scope.new || $scope.copy) {
       // Saving new item
       var newItemRef = firebase.database().ref('schedules/' + $rootScope.user.uid).push();
       id = newItemRef.key;
