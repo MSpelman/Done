@@ -375,7 +375,7 @@ angular.module('starter.controllers', [])
         var itemData = itemSnapshot.val();
         var time = new Date();
         time.setTime(itemData.time);  // itemData.time is a long int, need to convert to Date object
-        var item = new Item(itemData.id, itemData.name, itemData.description, time, itemData.timeless, itemData.duration);
+        var item = new Item(itemData.id, itemData.name, itemData.description, time, itemData.timeless, itemData.duration, itemData.timeSpent);
         if (itemData.completed == true) item.completeTask();
         var date = item.getDate();
         var day = schedule.getDay(date);  // getDay will create day and adds to schedule if does not exist
@@ -396,6 +396,7 @@ angular.module('starter.controllers', [])
     $scope.date = "";
     $scope.time = "";
     $scope.duration = "";
+    $scope.timeSpent = "";
     $scope.description = "";
     $scope.new = true;
     $scope.oldItem = null;
@@ -406,6 +407,7 @@ angular.module('starter.controllers', [])
     $scope.name = item.name;
     $scope.description = item.description;
     $scope.duration = item.duration;
+    $scope.timeSpent = item.timeSpent;
     // This block of code replaced by item.getDate()
     // var dateTime = item.time;  // item.time stores date and time together
     // var date = new Date();
@@ -436,6 +438,7 @@ angular.module('starter.controllers', [])
     var day = date.getDate();
     dateTime.setFullYear(year, month, day);
     if ($scope.duration < 1) $scope.duration = null;
+    if ($scope.timeSpent == "") $scope.timeSpent = 0;
 
     var id;
     var item;
@@ -443,7 +446,7 @@ angular.module('starter.controllers', [])
       // Saving new item
       var newItemRef = firebase.database().ref('schedules/' + $rootScope.user.uid).push();
       id = newItemRef.key;
-      item = new Item(id, $scope.name, $scope.description, dateTime, false, $scope.duration);
+      item = new Item(id, $scope.name, $scope.description, dateTime, false, $scope.duration, $scope.timeSpent);
       newItemRef.set({
         id: item.id,
         name: item.name,
@@ -451,7 +454,8 @@ angular.module('starter.controllers', [])
         time: item.time.getTime(),
         timeless: item.timeless,
         completed: item.completed,
-        duration: item.duration
+        duration: item.duration,
+        timeSpent: item.timeSpent
       });
     } else {
       // Updating existing item
@@ -461,7 +465,7 @@ angular.module('starter.controllers', [])
       var oldDate = new Date();
       oldDate.setTime(oldDateTime);
       oldDate.setHours(0, 0, 0, 0);
-      item = new Item(id, $scope.name, $scope.description, dateTime, false, $scope.duration);
+      item = new Item(id, $scope.name, $scope.description, dateTime, false, $scope.duration, $scope.timeSpent);
       $rootScope.schedule.getDay(oldDate).removeItem($scope.oldItem);
       delete $rootScope.itemIndex[item.id];
       itemRef.set({
@@ -471,7 +475,8 @@ angular.module('starter.controllers', [])
         time: item.time.getTime(),
         timeless: item.timeless,
         completed: item.completed,
-        duration: item.duration
+        duration: item.duration,
+        timeSpent: item.timeSpent
       });
     }
 
@@ -484,6 +489,7 @@ angular.module('starter.controllers', [])
     $scope.time = "";
     $scope.duration = "";
     $scope.description = "";
+    $scope.timeSpent = "";
 
     $state.go('tab.todo');
   };
@@ -495,6 +501,7 @@ angular.module('starter.controllers', [])
     $scope.time = "";
     $scope.description = "";
     $scope.duration = "";
+    $scope.timeSpent = "";
 
     $state.go('tab.todo');
   };

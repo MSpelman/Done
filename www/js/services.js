@@ -257,7 +257,7 @@ angular.module('starter.services', [])
  * old AndDone project) for the complete list of members.
  */
 .factory('Item', function() {
-  return function(id, name, description, time, timeless, duration) {
+  return function(id, name, description, time, timeless, duration, timeSpent) {
     this.id = id;
     this.name = name;
     this.description = description;
@@ -266,7 +266,7 @@ angular.module('starter.services', [])
     this.timeless = timeless;
     this.completed = false;
     this.duration = duration;
-    this.timeSpent = 0;  // Time spent on task in minutes
+    this.timeSpent = timeSpent;  // Time spent on task in minutes
     //this.beforeTasks = [];
     //this.duringTasks = [];
 
