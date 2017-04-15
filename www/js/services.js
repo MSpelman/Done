@@ -266,6 +266,7 @@ angular.module('starter.services', [])
     this.timeless = timeless;
     this.completed = false;
     this.duration = duration;
+    this.timeSpent = 0;  // Time spent on task in minutes
     //this.beforeTasks = [];
     //this.duringTasks = [];
 
