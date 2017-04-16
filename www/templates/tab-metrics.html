@@ -6,6 +6,19 @@
     </button>
   </ion-header-bar>
   <ion-content class="padding">
-    TODO - Add metrics!
+    <div class="padding item item-divider">Daily Stats for Today:</div>
+    <div>
+      <strong>Tasks completed: </strong>{{$parent.numberCompleted}} / {{$parent.numberTasks}}<br>
+      <strong>Number of Events: </strong>{{$parent.numberEvents}}<br>
+      <strong>Time Spent:</strong>
+    </div>
+    <div ng-repeat="item in items">
+      <span style="margin-left: 50px; color: {{getColor(item)}}">
+        {{item.name}}: {{item.time}} mins
+      </span>
+    </div>
+    <div>
+      <strong>Total Time: </strong>{{$parent.totalTime}}
+    </div>
   </ion-content>
 </ion-view>

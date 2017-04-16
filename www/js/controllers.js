@@ -283,8 +283,55 @@ angular.module('starter.controllers', [])
   $scope.chat = Chats.get($stateParams.chatId);
 })
 
-.controller('MetricsCtrl', function($scope) {
+.controller('MetricsCtrl', function($scope, $ionicLoading, $state, $rootScope) {
+  $scope.$on('$ionicView.enter', function(e) {
+    if (firebase.auth().currentUser == null) {
+      // Require user to login
+      $ionicLoading.show({
+        template: 'Please log in',
+        noBackdrop: true,
+        duration: 1000
+      });
+      $state.go('login');
+    } else {
+      // Logged in, calculate metrics for selected date
+      $scope.numberTasks = 0;
+      $scope.numberCompleted = 0;
+      $scope.numberEvents = 0;
+      $scope.items = [];
+      $scope.totalTime = 0;
 
+      $scope.selectedDay = $rootScope.schedule.getToday();
+
+      $scope.selectedDay.items.forEach(function (item) {
+        if (item.duration > 0) {
+          // Event
+          $scope.numberEvents += 1;
+          $scope.totalTime += item.duration;
+          $scope.items.push({
+            name: item.name,
+            time: item.duration,
+            isEvent: true
+          })
+        } else {
+          // Task
+          $scope.numberTasks += 1;
+          if (item.isCompleted()) $scope.numberCompleted += 1;
+          $scope.totalTime += item.timeSpent;
+          $scope.items.push({
+            name: item.name,
+            time: item.timeSpent,
+            isEvent: false
+          })
+        }
+      })
+    }
+  });
+
+  $scope.getColor = function(item) {
+    if (item.isEvent) return "hotpink";
+    return "blue";
+  }
 })
 
 .controller('ContactsCtrl', function($scope, Chats) {
