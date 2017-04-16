@@ -388,44 +388,46 @@ angular.module('starter.controllers', [])
 })
 
 .controller('ItemEntryCtrl', function($scope, $state, $stateParams, $rootScope, Item) {
-  $scope.copy = false;
-  $scope.title = "Edit Item";
-  if ($stateParams.itemId == null) {
-    // Case where adding a new item
-    $scope.name = "";
-    $scope.date = "";
-    $scope.time = "";
-    $scope.duration = "";
-    $scope.timeSpent = "";
-    $scope.description = "";
-    $scope.new = true;
-    $scope.oldItem = null;
-    $scope.title = "Add Item";
-  } else {
-    // Case where editing an existing item
-    var item = $rootScope.itemIndex[$stateParams.itemId];
-    $scope.name = item.name;
-    $scope.description = item.description;
-    $scope.duration = item.duration;
-    $scope.timeSpent = item.timeSpent;
-    // This block of code replaced by item.getDate()
-    // var dateTime = item.time;  // item.time stores date and time together
-    // var date = new Date();
-    // date.setTime(dateTime);
-    // date.setHours(0, 0, 0, 0);
-    $scope.date = item.getDate();
-    // This block of code replaced by item.getTime()
-    // var time = new Date();
-    // time.setTime(dateTime);
-    // time.setFullYear(1970, 0, 1);
-    $scope.time = item.getTime();
-    $scope.new = false;
-    $scope.oldItem = item;
-    if ($stateParams.copy == true) {
-      $scope.copy = true;
-      $scope.title = "Copy Item";
+  $scope.$on('$ionicView.enter', function(e) {
+    $scope.copy = false;
+    $scope.title = "Edit Item";
+    if ($stateParams.itemId == null) {
+      // Case where adding a new item
+      $scope.name = "";
+      $scope.date = "";
+      $scope.time = "";
+      $scope.duration = "";
+      $scope.timeSpent = "";
+      $scope.description = "";
+      $scope.new = true;
+      $scope.oldItem = null;
+      $scope.title = "Add Item";
+    } else {
+      // Case where editing an existing item
+      var item = $rootScope.itemIndex[$stateParams.itemId];
+      $scope.name = item.name;
+      $scope.description = item.description;
+      $scope.duration = item.duration;
+      $scope.timeSpent = item.timeSpent;
+      // This block of code replaced by item.getDate()
+      // var dateTime = item.time;  // item.time stores date and time together
+      // var date = new Date();
+      // date.setTime(dateTime);
+      // date.setHours(0, 0, 0, 0);
+      $scope.date = item.getDate();
+      // This block of code replaced by item.getTime()
+      // var time = new Date();
+      // time.setTime(dateTime);
+      // time.setFullYear(1970, 0, 1);
+      $scope.time = item.getTime();
+      $scope.new = false;
+      $scope.oldItem = item;
+      if ($stateParams.copy == true) {
+        $scope.copy = true;
+        $scope.title = "Copy Item";
+      }
     }
-  }
+  });
 
   // Code called when save button pressed
   $scope.saveItem = function() {
