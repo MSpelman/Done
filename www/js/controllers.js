@@ -10,19 +10,21 @@ angular.module('starter.controllers', [])
   //});
   $scope.completeText = null;
 
-  if (firebase.auth().currentUser == null) {
-    // Require user to login
-    $ionicLoading.show({
-      template: 'Please log in',
-      noBackdrop: true,
-      duration: 1000
-    });
-    $state.go('login');
-  } else {
-    // Logged in, get schedule for today and tomorrow
-    $scope.today = $rootScope.schedule.getToday();
-    $scope.tomorrow = $rootScope.schedule.getTomorrow();
-  }
+  $scope.$on('$ionicView.enter', function(e) {
+    if (firebase.auth().currentUser == null) {
+      // Require user to login
+      $ionicLoading.show({
+        template: 'Please log in',
+        noBackdrop: true,
+        duration: 1000
+      });
+      $state.go('login');
+    } else {
+      // Logged in, get schedule for today and tomorrow
+      $scope.today = $rootScope.schedule.getToday();
+      $scope.tomorrow = $rootScope.schedule.getTomorrow();
+    }
+  });
 
   // Color coordinates the items
   // gray means completed
@@ -87,7 +89,7 @@ angular.module('starter.controllers', [])
     } else {
       $scope.completeText = "Complete Task";
     }
-    $scope.completeText
+
     var menu = $ionicActionSheet.show({
       buttons: [
         {text: $scope.completeText},
@@ -284,6 +286,10 @@ angular.module('starter.controllers', [])
 })
 
 .controller('MetricsCtrl', function($scope, $ionicLoading, $state, $rootScope) {
+  var todayDate = new Date();
+  todayDate.setHours(0, 0, 0, 0);
+  $scope.selectedDate = todayDate;
+
   $scope.$on('$ionicView.enter', function(e) {
     if (firebase.auth().currentUser == null) {
       // Require user to login
@@ -294,43 +300,47 @@ angular.module('starter.controllers', [])
       });
       $state.go('login');
     } else {
-      // Logged in, calculate metrics for selected date
-      $scope.numberTasks = 0;
-      $scope.numberCompleted = 0;
-      $scope.numberEvents = 0;
-      $scope.items = [];
-      $scope.totalTime = 0;
-
-      $scope.selectedDay = $rootScope.schedule.getToday();
-
-      $scope.selectedDay.items.forEach(function (item) {
-        if (item.duration > 0) {
-          // Event
-          $scope.numberEvents += 1;
-          $scope.totalTime += item.duration;
-          $scope.items.push({
-            name: item.name,
-            time: item.duration,
-            isEvent: true
-          })
-        } else {
-          // Task
-          $scope.numberTasks += 1;
-          if (item.isCompleted()) $scope.numberCompleted += 1;
-          $scope.totalTime += item.timeSpent;
-          $scope.items.push({
-            name: item.name,
-            time: item.timeSpent,
-            isEvent: false
-          })
-        }
-      })
+      $scope.getMetrics();
     }
   });
 
   $scope.getColor = function(item) {
     if (item.isEvent) return "hotpink";
     return "blue";
+  };
+
+  $scope.getMetrics = function() {
+    // Logged in, calculate metrics for selected date
+    $scope.numberTasks = 0;
+    $scope.numberCompleted = 0;
+    $scope.numberEvents = 0;
+    $scope.items = [];
+    $scope.totalTime = 0;
+
+    $scope.selectedDay = $rootScope.schedule.getDay($scope.selectedDate);
+
+    $scope.selectedDay.items.forEach(function (item) {
+      if (item.duration > 0) {
+        // Event
+        $scope.numberEvents += 1;
+        $scope.totalTime += item.duration;
+        $scope.items.push({
+          name: item.name,
+          time: item.duration,
+          isEvent: true
+        })
+      } else {
+        // Task
+        $scope.numberTasks += 1;
+        if (item.isCompleted()) $scope.numberCompleted += 1;
+        $scope.totalTime += item.timeSpent;
+        $scope.items.push({
+          name: item.name,
+          time: item.timeSpent,
+          isEvent: false
+        })
+      }
+    })
   }
 })
 
