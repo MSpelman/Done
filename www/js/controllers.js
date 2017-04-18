@@ -309,6 +309,12 @@ angular.module('starter.controllers', [])
     return "blue";
   };
 
+  $scope.getWidth = function(item) {
+    var percent = (item.time / $scope.totalTime) * 100;
+    var result = percent.toString() + "vw";
+    return result;
+  };
+
   $scope.getMetrics = function() {
     // Logged in, calculate metrics for selected date
     $scope.numberTasks = 0;
