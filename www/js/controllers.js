@@ -315,6 +315,10 @@ angular.module('starter.controllers', [])
     return result;
   };
 
+  $scope.goToWeek = function() {
+    $state.go('week-metrics');
+  };
+
   $scope.getMetrics = function() {
     // Logged in, calculate metrics for selected date
     $scope.numberTasks = 0;
@@ -347,6 +351,79 @@ angular.module('starter.controllers', [])
         })
       }
     })
+  }
+})
+
+.controller('WeekMetricsCtrl', function($scope, $ionicLoading, $state, $rootScope) {
+  $scope.$on('$ionicView.enter', function(e) {
+    if (firebase.auth().currentUser == null) {
+      // Require user to login
+      $ionicLoading.show({
+        template: 'Please log in',
+        noBackdrop: true,
+        duration: 1000
+      });
+      $state.go('login');
+    } else {
+      $scope.todayDate = new Date();
+      $scope.todayDate.setHours(0, 0, 0, 0);
+      $scope.getMetrics();
+    }
+  });
+
+  $scope.getColor = function(item) {
+    if (item.isEvent) return "hotpink";
+    return "blue";
+  };
+
+  $scope.getWidth = function(item) {
+    var percent = (item.time / $scope.totalTime) * 100;
+    var result = percent.toString() + "vw";
+    return result;
+  };
+
+  $scope.goToDay = function() {
+    $state.go('tab.metrics');
+  };
+
+  $scope.getMetrics = function() {
+    // Logged in, calculate metrics for selected date
+    $scope.numberTasks = 0;
+    $scope.numberCompleted = 0;
+    $scope.numberEvents = 0;
+    $scope.items = [];
+    $scope.totalTime = 0;
+
+    for (var i = 0; i < 7; i++) {
+      var date = new Date();
+      var dateTime = $scope.todayDate.getTime();
+      dateTime = dateTime - (i * 86400000);
+      date.setTime(dateTime);
+      var day = $rootScope.schedule.getDay(date);
+
+      day.items.forEach(function (item) {
+        if (item.duration > 0) {
+          // Event
+          $scope.numberEvents += 1;
+          $scope.totalTime += item.duration;
+          $scope.items.push({
+            name: item.name,
+            time: item.duration,
+            isEvent: true
+          })
+        } else {
+          // Task
+          $scope.numberTasks += 1;
+          if (item.isCompleted()) $scope.numberCompleted += 1;
+          $scope.totalTime += item.timeSpent;
+          $scope.items.push({
+            name: item.name,
+            time: item.timeSpent,
+            isEvent: false
+          })
+        }
+      })
+    }
   }
 })
 
