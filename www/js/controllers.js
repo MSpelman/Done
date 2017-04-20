@@ -316,7 +316,7 @@ angular.module('starter.controllers', [])
   };
 
   $scope.goToWeek = function() {
-    $state.go('week-metrics');
+    $state.go('tab.week-metrics');
   };
 
   $scope.getMetrics = function() {

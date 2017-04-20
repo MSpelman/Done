@@ -95,10 +95,14 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     }
   })
 
-  .state('week-metrics', {
+  .state('tab.week-metrics', {
     url: '/week-metrics',
-    templateUrl: 'templates/tab-week-metrics.html',
-    controller: 'WeekMetricsCtrl'
+    views: {
+      'tab-metrics': {
+        templateUrl: 'templates/tab-week-metrics.html',
+        controller: 'WeekMetricsCtrl'
+      }
+    }
   })
 
   .state('tab.contacts', {
