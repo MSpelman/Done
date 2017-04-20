@@ -105,6 +105,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     }
   })
 
+  .state('tab.month-metrics', {
+    url: '/month-metrics',
+    views: {
+      'tab-metrics': {
+        templateUrl: 'templates/tab-month-metrics.html',
+        controller: 'MonthMetricsCtrl'
+      }
+    }
+  })
+
   .state('tab.contacts', {
     url: '/contacts',
     views: {
