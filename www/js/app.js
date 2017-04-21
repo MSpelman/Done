@@ -7,7 +7,7 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
-.run(function($ionicPlatform, $rootScope, Calendar, Day, Item,$ionicHistory) {
+.run(function($ionicPlatform, $rootScope, Calendar, Day, Item, $ionicHistory) {
   $ionicHistory.clearCache();
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -95,6 +95,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     }
   })
 
+  .state('week-metrics', {
+    url: '/week-metrics',
+    templateUrl: 'templates/tab-week-metrics.html',
+    controller: 'WeekMetricsCtrl'
+  })
+
   .state('tab.contacts', {
     url: '/contacts',
     views: {
@@ -137,7 +143,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     templateUrl: 'templates/item-entry.html',
     controller: 'ItemEntryCtrl',
     params: {
-      'itemId': null
+      'itemId': null,
+      'copy': null
     }
   });
 

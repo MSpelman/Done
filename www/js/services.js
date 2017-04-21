@@ -227,6 +227,10 @@ angular.module('starter.services', [])
 
     this.addItem = function(newItem) {
       this.items.push(newItem);
+      // Sort array of items in time order
+      this.items.sort(function(a, b) {
+        return (a.getTime() - b.getTime());
+      });
     };
 
     this.removeItem = function(item) {
@@ -253,7 +257,7 @@ angular.module('starter.services', [])
  * old AndDone project) for the complete list of members.
  */
 .factory('Item', function() {
-  return function(id, name, description, time, timeless, duration) {
+  return function(id, name, description, time, timeless, duration, timeSpent) {
     this.id = id;
     this.name = name;
     this.description = description;
@@ -262,6 +266,7 @@ angular.module('starter.services', [])
     this.timeless = timeless;
     this.completed = false;
     this.duration = duration;
+    this.timeSpent = timeSpent;  // Time spent on task in minutes
     //this.beforeTasks = [];
     //this.duringTasks = [];
 
@@ -271,6 +276,10 @@ angular.module('starter.services', [])
 
     this.isCompleted = function() {
       return this.completed;
+    };
+
+    this.uncompleteTask = function() {
+      this.completed = false;
     };
 
     this.displayTime = function() {

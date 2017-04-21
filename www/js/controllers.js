@@ -8,20 +8,23 @@ angular.module('starter.controllers', [])
   //
   //$scope.$on('$ionicView.enter', function(e) {
   //});
+  $scope.completeText = null;
 
-  if (firebase.auth().currentUser == null) {
-    // Require user to login
-    $ionicLoading.show({
-      template: 'Please log in',
-      noBackdrop: true,
-      duration: 1000
-    });
-    $state.go('login');
-  } else {
-    // Logged in, get schedule for today and tomorrow
-    $scope.today = $rootScope.schedule.getToday();
-    $scope.tomorrow = $rootScope.schedule.getTomorrow();
-  }
+  $scope.$on('$ionicView.enter', function(e) {
+    if (firebase.auth().currentUser == null) {
+      // Require user to login
+      $ionicLoading.show({
+        template: 'Please log in',
+        noBackdrop: true,
+        duration: 1000
+      });
+      $state.go('login');
+    } else {
+      // Logged in, get schedule for today and tomorrow
+      $scope.today = $rootScope.schedule.getToday();
+      $scope.tomorrow = $rootScope.schedule.getTomorrow();
+    }
+  });
 
   // Color coordinates the items
   // gray means completed
@@ -46,7 +49,19 @@ angular.module('starter.controllers', [])
 
   // Marks a task as completed
   $scope.completeTask = function(item) {
-    item.completed = true;
+    item.completeTask();
+    var id = item.id;
+    var itemRef = firebase.database().ref('schedules/' + $rootScope.user.uid + '/' + id);
+    itemRef.update({completed: true});
+    event.preventDefault();
+  };
+
+  // Marks a task as un-completed
+  $scope.uncompleteTask = function(item) {
+    item.uncompleteTask();
+    var id = item.id;
+    var itemRef = firebase.database().ref('schedules/' + $rootScope.user.uid + '/' + id);
+    itemRef.update({completed: false});
     event.preventDefault();
   };
 
@@ -69,9 +84,15 @@ angular.module('starter.controllers', [])
   // Displays the slide over menu with options associated with schedule items
   $scope.showMenu = function(item) {
     event.preventDefault();
+    if (item.isCompleted()) {
+      $scope.completeText = "Uncomplete Task";
+    } else {
+      $scope.completeText = "Complete Task";
+    }
+
     var menu = $ionicActionSheet.show({
       buttons: [
-        {text: 'Complete Task'},
+        {text: $scope.completeText},
         {text: 'Start Task'},
         {text: 'Edit'},
         {text: 'Copy'}
@@ -85,11 +106,22 @@ angular.module('starter.controllers', [])
       buttonClicked: function(index) {
         switch (index) {
           case 0:
-            $scope.completeTask(item);
+            if (item.isCompleted()) {
+              $scope.uncompleteTask(item);
+            } else {
+              $scope.completeTask(item);
+            }
             break;
           case 2:
             $state.go('item-entry', {
-              'itemId': item.id});
+              'itemId': item.id
+            });
+            break;
+          case 3:
+            $state.go('item-entry', {
+              'itemId': item.id,
+              'copy': true
+            });
             break;
           default:
             return true;
@@ -257,8 +289,146 @@ angular.module('starter.controllers', [])
   $scope.chat = Chats.get($stateParams.chatId);
 })
 
-.controller('MetricsCtrl', function($scope) {
+.controller('MetricsCtrl', function($scope, $ionicLoading, $state, $rootScope) {
+  var todayDate = new Date();
+  todayDate.setHours(0, 0, 0, 0);
+  $scope.selectedDate = todayDate;
 
+  $scope.$on('$ionicView.enter', function(e) {
+    if (firebase.auth().currentUser == null) {
+      // Require user to login
+      $ionicLoading.show({
+        template: 'Please log in',
+        noBackdrop: true,
+        duration: 1000
+      });
+      $state.go('login');
+    } else {
+      $scope.getMetrics();
+    }
+  });
+
+  $scope.getColor = function(item) {
+    if (item.isEvent) return "hotpink";
+    return "blue";
+  };
+
+  $scope.getWidth = function(item) {
+    var percent = (item.time / $scope.totalTime) * 100;
+    var result = percent.toString() + "vw";
+    return result;
+  };
+
+  $scope.goToWeek = function() {
+    $state.go('week-metrics');
+  };
+
+  $scope.getMetrics = function() {
+    // Logged in, calculate metrics for selected date
+    $scope.numberTasks = 0;
+    $scope.numberCompleted = 0;
+    $scope.numberEvents = 0;
+    $scope.items = [];
+    $scope.totalTime = 0;
+
+    $scope.selectedDay = $rootScope.schedule.getDay($scope.selectedDate);
+
+    $scope.selectedDay.items.forEach(function (item) {
+      if (item.duration > 0) {
+        // Event
+        $scope.numberEvents += 1;
+        $scope.totalTime += item.duration;
+        $scope.items.push({
+          name: item.name,
+          time: item.duration,
+          isEvent: true
+        })
+      } else {
+        // Task
+        $scope.numberTasks += 1;
+        if (item.isCompleted()) $scope.numberCompleted += 1;
+        $scope.totalTime += item.timeSpent;
+        $scope.items.push({
+          name: item.name,
+          time: item.timeSpent,
+          isEvent: false
+        })
+      }
+    })
+  }
+})
+
+.controller('WeekMetricsCtrl', function($scope, $ionicLoading, $state, $rootScope) {
+  $scope.$on('$ionicView.enter', function(e) {
+    if (firebase.auth().currentUser == null) {
+      // Require user to login
+      $ionicLoading.show({
+        template: 'Please log in',
+        noBackdrop: true,
+        duration: 1000
+      });
+      $state.go('login');
+    } else {
+      $scope.todayDate = new Date();
+      $scope.todayDate.setHours(0, 0, 0, 0);
+      $scope.getMetrics();
+    }
+  });
+
+  $scope.getColor = function(item) {
+    if (item.isEvent) return "hotpink";
+    return "blue";
+  };
+
+  $scope.getWidth = function(item) {
+    var percent = (item.time / $scope.totalTime) * 100;
+    var result = percent.toString() + "vw";
+    return result;
+  };
+
+  $scope.goToDay = function() {
+    $state.go('tab.metrics');
+  };
+
+  $scope.getMetrics = function() {
+    // Logged in, calculate metrics for selected date
+    $scope.numberTasks = 0;
+    $scope.numberCompleted = 0;
+    $scope.numberEvents = 0;
+    $scope.items = [];
+    $scope.totalTime = 0;
+
+    for (var i = 0; i < 7; i++) {
+      var date = new Date();
+      var dateTime = $scope.todayDate.getTime();
+      dateTime = dateTime - (i * 86400000);
+      date.setTime(dateTime);
+      var day = $rootScope.schedule.getDay(date);
+
+      day.items.forEach(function (item) {
+        if (item.duration > 0) {
+          // Event
+          $scope.numberEvents += 1;
+          $scope.totalTime += item.duration;
+          $scope.items.push({
+            name: item.name,
+            time: item.duration,
+            isEvent: true
+          })
+        } else {
+          // Task
+          $scope.numberTasks += 1;
+          if (item.isCompleted()) $scope.numberCompleted += 1;
+          $scope.totalTime += item.timeSpent;
+          $scope.items.push({
+            name: item.name,
+            time: item.timeSpent,
+            isEvent: false
+          })
+        }
+      })
+    }
+  }
 })
 
 .controller('ContactsCtrl', function($scope, Chats) {
@@ -279,7 +449,7 @@ angular.module('starter.controllers', [])
   if(firebase.auth().currentUser){
     $scope.todisplay="Logout: "+firebase.auth().currentUser.email;
   } else {
-    $scope.todisplay="Login";
+    $state.go('login');
   }
 
   $scope.onClick = function () {
@@ -288,6 +458,7 @@ angular.module('starter.controllers', [])
         console.log('Signed Out Firebase user');
         $ionicLoading.show({template: 'Logout successful!', noBackdrop: true, duration: 1000});
         location.reload();
+        $state.go('login');
       }).catch(function (error) {
         console.error('Sign Out Error', error);
         $ionicLoading.show({template: 'Logout Unsuccessful!', noBackdrop: true, duration: 1000});
@@ -295,20 +466,6 @@ angular.module('starter.controllers', [])
     } else {
       $state.go('login');
     }
-  }
-})
-
-.controller('UserSettingsCtrl', function($scope,$state,$ionicLoading) {
-  $scope.currentUser=firebase.auth().currentUser.email;
-  $scope.logoutFirebaseUser = function () {
-    firebase.auth().signOut().then(function () {
-      console.log('Signed Out Firebase user');
-      $ionicLoading.show({template: 'Logout successful!', noBackdrop: true, duration: 1000});
-      $state.go('tabs.settings');
-    }).catch(function (error) {
-      console.error('Sign Out Error', error);
-      $ionicLoading.show({template: 'Logout Unsuccessful!', noBackdrop: true, duration: 1000});
-    });
   }
 })
 
@@ -336,10 +493,12 @@ angular.module('starter.controllers', [])
 
   $scope.createFirebaseUser = function () {
     return firebase.auth().createUserWithEmailAndPassword($scope.username, $scope.password).then(function () {
-      $rootScope.user = firebase.auth().currentUser;
-      $rootScope.schedule = new Calendar();
-      firebase.database().ref('schedules/ + user.id').set($rootScope.schedule);
-      $ionicLoading.show({template: 'Created Firebase User!', noBackdrop: true, duration: 1000});
+      firebase.auth().signInWithEmailAndPassword($scope.username, $scope.password).then(function() {
+        $rootScope.user = firebase.auth().currentUser;
+        $rootScope.schedule = new Calendar();
+        $ionicLoading.show({template: 'Created Firebase User!', noBackdrop: true, duration: 1000});
+        $state.go('tab.settings', {refresh: 1});
+      });
     }).catch(function (error) {
       var errorCode = error.code;
       var errorMessage = error.message;
@@ -360,7 +519,8 @@ angular.module('starter.controllers', [])
         var itemData = itemSnapshot.val();
         var time = new Date();
         time.setTime(itemData.time);  // itemData.time is a long int, need to convert to Date object
-        var item = new Item(itemData.id, itemData.name, itemData.description, time, itemData.timeless, itemData.duration);
+        var item = new Item(itemData.id, itemData.name, itemData.description, time, itemData.timeless, itemData.duration, itemData.timeSpent);
+        if (itemData.completed == true) item.completeTask();
         var date = item.getDate();
         var day = schedule.getDay(date);  // getDay will create day and adds to schedule if does not exist
         day.addItem(item);
@@ -372,36 +532,46 @@ angular.module('starter.controllers', [])
 })
 
 .controller('ItemEntryCtrl', function($scope, $state, $stateParams, $rootScope, Item) {
-
-  if ($stateParams.itemId == null) {
-    // Case where adding a new item
-    $scope.name = "";
-    $scope.date = "";
-    $scope.time = "";
-    $scope.duration = "";
-    $scope.description = "";
-    $scope.new = true;
-    $scope.oldItem = null;
-  } else {
-    // Case where editing an existing item
-    var item = $rootScope.itemIndex[$stateParams.itemId];
-    $scope.name = item.name;
-    $scope.description = item.description;
-    $scope.duration = item.duration;
-    // This block of code replaced by item.getDate()
-    // var dateTime = item.time;  // item.time stores date and time together
-    // var date = new Date();
-    // date.setTime(dateTime);
-    // date.setHours(0, 0, 0, 0);
-    $scope.date = item.getDate();
-    // This block of code replaced by item.getTime()
-    // var time = new Date();
-    // time.setTime(dateTime);
-    // time.setFullYear(1970, 0, 1);
-    $scope.time = item.getTime();
-    $scope.new = false;
-    $scope.oldItem = item;
-  }
+  $scope.$on('$ionicView.enter', function(e) {
+    $scope.copy = false;
+    $scope.title = "Edit Item";
+    if ($stateParams.itemId == null) {
+      // Case where adding a new item
+      $scope.name = "";
+      $scope.date = "";
+      $scope.time = "";
+      $scope.duration = "";
+      $scope.timeSpent = "";
+      $scope.description = "";
+      $scope.new = true;
+      $scope.oldItem = null;
+      $scope.title = "Add Item";
+    } else {
+      // Case where editing an existing item
+      var item = $rootScope.itemIndex[$stateParams.itemId];
+      $scope.name = item.name;
+      $scope.description = item.description;
+      $scope.duration = item.duration;
+      $scope.timeSpent = item.timeSpent;
+      // This block of code replaced by item.getDate()
+      // var dateTime = item.time;  // item.time stores date and time together
+      // var date = new Date();
+      // date.setTime(dateTime);
+      // date.setHours(0, 0, 0, 0);
+      $scope.date = item.getDate();
+      // This block of code replaced by item.getTime()
+      // var time = new Date();
+      // time.setTime(dateTime);
+      // time.setFullYear(1970, 0, 1);
+      $scope.time = item.getTime();
+      $scope.new = false;
+      $scope.oldItem = item;
+      if ($stateParams.copy == true) {
+        $scope.copy = true;
+        $scope.title = "Copy Item";
+      }
+    }
+  });
 
   // Code called when save button pressed
   $scope.saveItem = function() {
@@ -414,14 +584,15 @@ angular.module('starter.controllers', [])
     var day = date.getDate();
     dateTime.setFullYear(year, month, day);
     if ($scope.duration < 1) $scope.duration = null;
+    if ($scope.timeSpent == "") $scope.timeSpent = 0;
 
     var id;
     var item;
-    if ($scope.new) {
+    if ($scope.new || $scope.copy) {
       // Saving new item
       var newItemRef = firebase.database().ref('schedules/' + $rootScope.user.uid).push();
       id = newItemRef.key;
-      item = new Item(id, $scope.name, $scope.description, dateTime, false, $scope.duration);
+      item = new Item(id, $scope.name, $scope.description, dateTime, false, $scope.duration, $scope.timeSpent);
       newItemRef.set({
         id: item.id,
         name: item.name,
@@ -429,7 +600,8 @@ angular.module('starter.controllers', [])
         time: item.time.getTime(),
         timeless: item.timeless,
         completed: item.completed,
-        duration: item.duration
+        duration: item.duration,
+        timeSpent: item.timeSpent
       });
     } else {
       // Updating existing item
@@ -439,7 +611,7 @@ angular.module('starter.controllers', [])
       var oldDate = new Date();
       oldDate.setTime(oldDateTime);
       oldDate.setHours(0, 0, 0, 0);
-      item = new Item(id, $scope.name, $scope.description, dateTime, false, $scope.duration);
+      item = new Item(id, $scope.name, $scope.description, dateTime, false, $scope.duration, $scope.timeSpent);
       $rootScope.schedule.getDay(oldDate).removeItem($scope.oldItem);
       delete $rootScope.itemIndex[item.id];
       itemRef.set({
@@ -449,7 +621,8 @@ angular.module('starter.controllers', [])
         time: item.time.getTime(),
         timeless: item.timeless,
         completed: item.completed,
-        duration: item.duration
+        duration: item.duration,
+        timeSpent: item.timeSpent
       });
     }
 
@@ -462,6 +635,7 @@ angular.module('starter.controllers', [])
     $scope.time = "";
     $scope.duration = "";
     $scope.description = "";
+    $scope.timeSpent = "";
 
     $state.go('tab.todo');
   };
@@ -473,6 +647,7 @@ angular.module('starter.controllers', [])
     $scope.time = "";
     $scope.description = "";
     $scope.duration = "";
+    $scope.timeSpent = "";
 
     $state.go('tab.todo');
   };
