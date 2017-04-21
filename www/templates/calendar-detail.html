@@ -1,11 +1,13 @@
 <!--
   This template loads for the 'tab.calendar-detail' state (app.js)
 -->
-<ion-view view-title="{{chat.name}}">
+<ion-view view-title="{{item.name}}">
   <ion-content class="padding">
-    <img ng-src="{{chat.face}}" style="width: 64px; height: 64px">
+    <strong>{{item.name}}</strong><br><br>
+    <strong>Duration:</strong> {{item.duration}}<br><br>
+    <strong>Description:</strong>
     <p>
-      {{chat.lastText}}
+      {{item.description}}
     </p>
   </ion-content>
 </ion-view>
