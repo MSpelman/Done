@@ -232,8 +232,8 @@ angular.module('starter.controllers', [])
   $scope.chats = Chats.all();
   $scope.date = new Date();
   $scope.formattedDate = $scope.date.toDateString();
-  $scope.events = Schedule.getToday();
-
+  $scope.date.setHours(0, 0, 0, 0);
+  $scope.events = $rootScope.schedule.getDay($scope.date);
 
 
   $scope.remove = function(chat) {
@@ -245,6 +245,8 @@ angular.module('starter.controllers', [])
     dateTime = dateTime + 86400000;
     $scope.date.setTime(dateTime);
     $scope.formattedDate = $scope.date.toDateString();
+    $scope.date.setHours(0, 0, 0, 0);
+    $scope.events = $rootScope.schedule.getDay($scope.date);
   };
 
   $scope.prevDate = function () {
@@ -252,6 +254,8 @@ angular.module('starter.controllers', [])
     dateTime = dateTime - 86400000;
     $scope.date.setTime(dateTime);
     $scope.formattedDate = $scope.date.toDateString();
+    $scope.date.setHours(0, 0, 0, 0);
+    $scope.events = $rootScope.schedule.getDay($scope.date);
   }
 })
 
