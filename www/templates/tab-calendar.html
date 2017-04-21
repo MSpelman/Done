@@ -16,136 +16,140 @@
       </button>
     </ion-item>
       <ion-scroll direction="y">
+        <div class="wrapper">
       <div class="calendarDayView">
         <ion-list>
-          <ion-item class="calendarEvent" ng-repeat="event in events.items" type="item-text-wrap" href="#/tab/calendar/{{event.id}}">
-            <h2>{{event.name}}</h2>
-
+          <ion-item class="calendarEvent" ng-repeat="item in events.items"  type="item-text-wrap" href="#/tab/calendar/{{item.id}}" ng-style="{'height': item.duration + 'px', 'top': item.time.getHours() * 60 + 'px'}">
+            <div>
+              <h2>{{item.name}}</h2>
+            <!--</div> -->
+            </div>
           </ion-item>
         </ion-list>
-        <div class="calendarBackground">
-        <div class="calendarHour">
-          <div class="calendarTime">
-            12:00AM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            1:00AM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            2:00AM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            3:00AM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            4:00AM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            5:00AM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            6:00AM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            7:00AM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            8:00AM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            9:00AM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            10:00AM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            11:00AM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            12:00PM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            1:00PM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            2:00PM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            3:00PM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            4:00PM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            5:00PM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            6:00PM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            7:00PM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            8:00PM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            9:00PM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            10:00PM
-          </div>
-        </div>
-        <div class="calendarHour">
-          <div class="calendarTime">
-            11:00PM
-          </div>
-        </div>
-        </div>
       </div>
+        <div class="calendarBackground">
+          <div class="calendarHour">
+            <div class="calendarTime">
+              12:00AM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              1:00AM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              2:00AM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              3:00AM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              4:00AM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              5:00AM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              6:00AM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              7:00AM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              8:00AM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              9:00AM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              10:00AM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              11:00AM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              12:00PM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              1:00PM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              2:00PM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              3:00PM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              4:00PM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              5:00PM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              6:00PM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              7:00PM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              8:00PM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              9:00PM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              10:00PM
+            </div>
+          </div>
+          <div class="calendarHour">
+            <div class="calendarTime">
+              11:00PM
+            </div>
+          </div>
+        </div>
+        </div>
       </ion-scroll>
     </div>
   </ion-content>
