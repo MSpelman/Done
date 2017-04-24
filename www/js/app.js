@@ -137,6 +137,15 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     templateUrl: 'templates/login.html',
     controller: 'LoginCtrl'
   })
+    .state('start-task',{
+    url:'/startTask',
+      templateUrl:'templates/startTask.html',
+      controller:'startCtrl',
+      params: {
+        'countdown': 0,
+        'itemID' :null,
+      }
+  })
 
   .state('item-entry', {
     url: '/item-entry',

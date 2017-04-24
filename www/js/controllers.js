@@ -112,6 +112,28 @@ angular.module('starter.controllers', [])
               $scope.completeTask(item);
             }
             break;
+          case 1:
+            var myPopup=$ionicPopup.show( {
+                template:'<input type="text" ng-model="$parent.countdown" placeholder="enter time" >',
+                  title:'Set Count Down',
+              scope:$scope,
+              buttons:[
+              {text:'Cancel'},
+                {text: '<b> Start </b>',
+                  type:'button-positive',
+                  onTap:function(){
+                      $state.go('start-task',{ countdown :$scope.countdown , itemID: item.id});
+                    $scope.countdown="";
+
+                }
+
+            }
+            ]
+          });
+
+
+
+              break;
           case 2:
             $state.go('item-entry', {
               'itemId': item.id
@@ -659,4 +681,78 @@ angular.module('starter.controllers', [])
 
     return availableId;
   } */
-});
+})
+.controller('startCtrl', function ($scope,$state,$stateParams,$timeout,$rootScope,$ionicPopup) {
+  $scope.$on('$ionicView.enter', function(e) {
+    $scope.myTimer = $stateParams.countdown;
+    var id = $stateParams.itemID;
+    var itemRef = firebase.database().ref('schedules/' + $rootScope.user.uid + '/' + id);
+    var myTimerVariable = $timeout(myCustomTimer, 1000);
+
+    function myCustomTimer() {
+      $scope.myTimer--;
+      if ($scope.myTimer == 0) {
+        $timeout.cancel(myTimerVariable);
+        var Popup = $ionicPopup.show({
+          title: 'Done!',
+          template: 'Congratulation on finishing',
+          buttons:[
+            {
+            text: '<b> return to app</b>',
+            type: 'button-positive',
+            onTap: function () {
+              itemRef.once("value").then(function (snapshot) {
+                var post = snapshot.child("timeSpent").val();
+           // var Spent = $stateParams.countdown - $scope.myTimer;
+
+                itemRef.update({timeSpent: post+ Math.round($stateParams.countdown/ 60)});
+                $state.go('tab.todo');
+
+              });
+
+
+            }
+          }
+          ]
+        });
+
+
+      }
+
+      else {
+        myTimerVariable = $timeout(myCustomTimer, 1000);
+      }
+
+    }
+
+    $scope.stopTimer = function () {
+      var oldSpent;
+
+      var deletePopup = $ionicPopup.confirm({
+        title: 'quitting?',
+        template: 'Are you sure you want to quit?',
+        okType: 'button-default',
+        cancelType: 'button-calm'
+      });
+      deletePopup.then(function (res) {
+        if (res) {
+          itemRef.once("value").then(function (snapshot) {
+            var post = snapshot.child("timeSpent").val();
+            var Spent = $stateParams.countdown - $scope.myTimer;
+
+            itemRef.update({timeSpent: post+ Math.round(Spent/ 60)});
+            $state.go('tab.todo');
+
+          });
+
+
+        }
+
+      });
+
+
+    }
+
+
+  })
+})
