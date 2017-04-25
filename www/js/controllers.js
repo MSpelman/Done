@@ -271,6 +271,11 @@ angular.module('starter.controllers', [])
     }
   };
 
+  $scope.getDuration = function() {
+    if ($scope.item.duration < 1) return "";
+    else return $scope.item.duration;
+  };
+
   // Formats time in human readable form
   $scope.displayTime = function() {
     return $scope.item.displayTime();
@@ -325,6 +330,18 @@ angular.module('starter.controllers', [])
 
   $scope.goToMonth = function() {
     $state.go('tab.month-metrics');
+  };
+
+  // Expects time in minutes
+  $scope.displayTime = function(time) {
+    var result = "";
+    if (time < 60) {
+      result = time.toString() + " mins";
+    } else {
+      var hours = time / 60;
+      result = hours.toFixed(2) + " hrs";
+    }
+    return result;
   };
 
   $scope.getMetrics = function() {
@@ -396,6 +413,18 @@ angular.module('starter.controllers', [])
 
   $scope.goToMonth = function() {
     $state.go('tab.month-metrics');
+  };
+
+  // Expects time in minutes
+  $scope.displayTime = function(time) {
+    var result = "";
+    if (time < 60) {
+      result = time.toString() + " mins";
+    } else {
+      var hours = time / 60;
+      result = hours.toFixed(2) + " hrs";
+    }
+    return result;
   };
 
   $scope.getMetrics = function() {
@@ -473,6 +502,18 @@ angular.module('starter.controllers', [])
 
   $scope.goToWeek = function() {
     $state.go('tab.week-metrics');
+  };
+
+  // Expects time in minutes
+  $scope.displayTime = function(time) {
+    var result = "";
+    if (time < 60) {
+      result = time.toString() + " mins";
+    } else {
+      var hours = time / 60;
+      result = hours.toFixed(2) + " hrs";
+    }
+    return result;
   };
 
   $scope.getMetrics = function() {
@@ -637,6 +678,7 @@ angular.module('starter.controllers', [])
       $scope.name = item.name;
       $scope.description = item.description;
       $scope.duration = item.duration;
+      if ($scope.duration < 1) $scope.duration = "";
       $scope.timeSpent = item.timeSpent;
       // This block of code replaced by item.getDate()
       // var dateTime = item.time;  // item.time stores date and time together
@@ -668,7 +710,7 @@ angular.module('starter.controllers', [])
     var month = date.getMonth();
     var day = date.getDate();
     dateTime.setFullYear(year, month, day);
-    if ($scope.duration < 1) $scope.duration = null;
+    if ($scope.duration < 1) $scope.duration = -1;
     if ($scope.timeSpent == "") $scope.timeSpent = 0;
 
     var id;

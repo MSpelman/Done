@@ -18,13 +18,13 @@
       <strong>Time Spent:</strong>
     </div>
     <div ng-repeat="item in items">
-      <span style="margin-left: 50px; color: {{getColor(item)}}">
-        {{item.name}}: {{item.time}} mins
+      <span style="margin-left: 5px; color: {{getColor(item)}}">
+        {{item.name}}: {{displayTime(item.time)}}
       </span>
       <div style="background-color: {{getColor(item)}}; width: {{getWidth(item)}}; height: 10px; border: solid"></div>
     </div>
     <div>
-      <strong>Total Time: </strong>{{$parent.totalTime}} mins
+      <strong>Total Time: </strong>{{displayTime($parent.totalTime)}}
     </div>
   </ion-content>
 </ion-view>
