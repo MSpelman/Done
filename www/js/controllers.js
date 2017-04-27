@@ -1,4 +1,4 @@
-angular.module('starter.controllers', [])
+angular.module('starter.controllers', ['ngCordova'])
 
 .controller('TodoCtrl', function($scope, Schedule, $ionicActionSheet, $state, $rootScope, Calendar, Item, Day, $ionicPopup, $ionicLoading) {
   // With the new view caching in Ionic, Controllers are only called
@@ -95,7 +95,8 @@ angular.module('starter.controllers', [])
         {text: $scope.completeText},
         {text: 'Start Task'},
         {text: 'Edit'},
-        {text: 'Copy'}
+        {text: 'Copy'},
+        {text: 'Add Photo'}
       ],
       destructiveText: 'Delete',
       titleText: 'Menu',
@@ -123,6 +124,10 @@ angular.module('starter.controllers', [])
               'copy': true
             });
             break;
+          case 4:
+            $state.go('photo', {
+              'itemId': item.id,
+            });
           default:
             return true;
         }
@@ -658,7 +663,7 @@ angular.module('starter.controllers', [])
 })
 
 .controller('ItemEntryCtrl', function($scope, $state, $stateParams, $rootScope, Item) {
-  $scope.$on('$ionicView.enter', function(e) {
+  $scope.$on('$ionicView.enter', function (e) {
     $scope.copy = false;
     $scope.title = "Edit Item";
     if ($stateParams.itemId == null) {
@@ -701,7 +706,7 @@ angular.module('starter.controllers', [])
   });
 
   // Code called when save button pressed
-  $scope.saveItem = function() {
+  $scope.saveItem = function () {
     var dateTime = new Date();
     dateTime.setTime($scope.time);
     var date = new Date();
@@ -768,7 +773,7 @@ angular.module('starter.controllers', [])
   };
 
   // Called if cancel off of the item entry form
-  $scope.cancel = function() {
+  $scope.cancel = function () {
     $scope.name = "";
     $scope.date = "";
     $scope.time = "";
@@ -780,14 +785,64 @@ angular.module('starter.controllers', [])
   };
 
   /*
-  // This needs to be replaced with code that gets new id assigned by Firebase
-  $scope.getId = function() {
-    var availableId = 1;
+   // This needs to be replaced with code that gets new id assigned by Firebase
+   $scope.getId = function() {
+   var availableId = 1;
 
-    while ($rootScope.itemIndex[availableId] != null) {
-      availableId++;
+   while ($rootScope.itemIndex[availableId] != null) {
+   availableId++;
+   }
+
+   return availableId;
+   } */
+})
+
+.controller('PhotoCtrl', function($scope, $cordovaCamera, $state) {
+  $scope.options = {
+    quality: 50,
+    destinationType: Camera.DestinationType.FILE_URI,
+    sourceType: Camera.PictureSourceType.CAMERA,
+    allowEdit: true,
+    encodingType: Camera.EncodingType.JPEG,
+    targetWidth: 500,
+    targetHeight: 500,
+    popoverOptions: CameraPopoverOptions,
+    saveToPhotoAlbum: false,
+    correctOrientation: true
+  };
+
+  console.log($scope.imageURI);
+
+  if($scope.imageURI == null) {
+    $scope.buttonName = "Take Photo";
+  } else {
+    $scope.buttonName = "Save";
+  }
+
+  $scope.$on('$ionicView.enter', function(e) {
+    if($scope.imageURI == null) {
+      $scope.buttonName = "Take Photo";
+    } else {
+      $scope.buttonName = "Save";
+    }
+  });
+
+  $scope.photoOrSave = function() {
+    if ($scope.imageURI == null) {
+      $cordovaCamera.getPicture($scope.options).then(function(imageURI) {
+        $scope.imageURI = imageURI;
+        if ($scope.imageURI != null) $scope.buttonName = "Save";
+      }, function(err) {
+        console.log("Unable to load camera: " + err);
+      });
+    } else {
+      console.log("Save photo here");
+      $state.go('tab.todo');
     }
 
-    return availableId;
-  } */
+  };
+
+  $scope.cancel = function() {
+    $state.go('tab.todo');
+  };
 });

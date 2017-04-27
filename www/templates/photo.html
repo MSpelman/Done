@@ -1,0 +1,17 @@
+<!--
+  This template loads for the 'photo' state (app.js)
+-->
+<ion-view view-title="Done!">
+  <ion-header-bar class="bar bar-subheader">
+    <h2 class="title">Add Photo</h2>
+  </ion-header-bar>
+  <ion-content>
+    <div align="center">
+      <img ng-src="{{imageURI}}" alt="Please add photo" align="center" width="90%" class="padding">
+    </div>
+    <div class="button-bar">
+      <button class="button button-positive" ng-click="photoOrSave()">{{$parent.buttonName}}</button>
+      <button class="button" ng-click="cancel()">Cancel</button>
+    </div>
+  </ion-content>
+</ion-view>
