@@ -267,6 +267,7 @@ angular.module('starter.services', [])
     this.completed = false;
     this.duration = duration;
     this.timeSpent = timeSpent;  // Time spent on task in minutes
+    this.photos = [];
     //this.beforeTasks = [];
     //this.duringTasks = [];
 
@@ -312,6 +313,10 @@ angular.module('starter.services', [])
       time.setTime(dateTime);
       time.setFullYear(1970, 0, 1);
       return time;
+    };
+
+    this.addPhoto = function(newImageURI) {
+      this.photos.push(newImageURI);
     };
 
     /* this.addBeforeTask = function(newTask) {

@@ -12,6 +12,9 @@
       <p>
         {{item.description}}
       </p>
+      <div ng-repeat="photo in item.photos" align="center">
+        <img ng-src="{{photo}}" align="center" width="90%" class="padding">
+      </div>
     </div>
   </ion-content>
 </ion-view>

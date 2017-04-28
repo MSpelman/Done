@@ -797,7 +797,7 @@ angular.module('starter.controllers', ['ngCordova'])
    } */
 })
 
-.controller('PhotoCtrl', function($scope, $cordovaCamera, $state) {
+.controller('PhotoCtrl', function($scope, $cordovaCamera, $state, $stateParams, $rootScope) {
   $scope.options = {
     quality: 50,
     destinationType: Camera.DestinationType.FILE_URI,
@@ -825,10 +825,12 @@ angular.module('starter.controllers', ['ngCordova'])
     } else {
       $scope.buttonName = "Save";
     }
+    $scope.item = $rootScope.itemIndex[$stateParams.itemId]
   });
 
   $scope.photoOrSave = function() {
     if ($scope.imageURI == null) {
+      // Take photo
       $cordovaCamera.getPicture($scope.options).then(function(imageURI) {
         $scope.imageURI = imageURI;
         if ($scope.imageURI != null) $scope.buttonName = "Save";
@@ -836,13 +838,16 @@ angular.module('starter.controllers', ['ngCordova'])
         console.log("Unable to load camera: " + err);
       });
     } else {
-      console.log("Save photo here");
+      // Save photo
+      $scope.item.addPhoto($scope.imageURI);
+      $scope.imageURI = null;
       $state.go('tab.todo');
     }
 
   };
 
   $scope.cancel = function() {
+    $scope.imageURI = null;
     $state.go('tab.todo');
   };
 });
