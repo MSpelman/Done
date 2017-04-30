@@ -750,9 +750,15 @@ angular.module('starter.controllers', ['ngCordova'])
       oldDate.setTime(oldDateTime);
       oldDate.setHours(0, 0, 0, 0);
       item = new Item(id, $scope.name, $scope.description, dateTime, false, $scope.duration, $scope.timeSpent);
+      var photos = $scope.oldItem.getPhotos();
+      if (photos != null) {
+        for (var i = 0; i < photos.length; i++) {
+          item.addPhoto(photos[i]);
+        }
+      }
       $rootScope.schedule.getDay(oldDate).removeItem($scope.oldItem);
       delete $rootScope.itemIndex[item.id];
-      itemRef.set({
+      itemRef.update({
         id: item.id,
         name: item.name,
         description: item.description,
