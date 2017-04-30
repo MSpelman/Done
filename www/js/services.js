@@ -315,9 +315,13 @@ angular.module('starter.services', [])
       return time;
     };
 
-    this.addPhoto = function(newImageURI) {
-      this.photos.push(newImageURI);
+    this.addPhoto = function(newImageURL) {
+      this.photos.push(newImageURL);
     };
+
+    this.numberPhotos = function() {
+      return this.photos.length;
+    }
 
     /* this.addBeforeTask = function(newTask) {
       this.beforeTasks.push(newTask);

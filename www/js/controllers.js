@@ -126,7 +126,7 @@ angular.module('starter.controllers', ['ngCordova'])
             break;
           case 4:
             $state.go('photo', {
-              'itemId': item.id,
+              'itemId': item.id
             });
           default:
             return true;
@@ -800,7 +800,7 @@ angular.module('starter.controllers', ['ngCordova'])
 .controller('PhotoCtrl', function($scope, $cordovaCamera, $state, $stateParams, $rootScope) {
   $scope.options = {
     quality: 50,
-    destinationType: Camera.DestinationType.FILE_URI,
+    destinationType: Camera.DestinationType.DATA_URL,
     sourceType: Camera.PictureSourceType.CAMERA,
     allowEdit: true,
     encodingType: Camera.EncodingType.JPEG,
@@ -811,16 +811,14 @@ angular.module('starter.controllers', ['ngCordova'])
     correctOrientation: true
   };
 
-  console.log($scope.imageURI);
-
-  if($scope.imageURI == null) {
+  if($scope.imageData == null) {
     $scope.buttonName = "Take Photo";
   } else {
     $scope.buttonName = "Save";
   }
 
   $scope.$on('$ionicView.enter', function(e) {
-    if($scope.imageURI == null) {
+    if($scope.imageData == null) {
       $scope.buttonName = "Take Photo";
     } else {
       $scope.buttonName = "Save";
@@ -829,25 +827,41 @@ angular.module('starter.controllers', ['ngCordova'])
   });
 
   $scope.photoOrSave = function() {
-    if ($scope.imageURI == null) {
+    if ($scope.imageData == null) {
       // Take photo
-      $cordovaCamera.getPicture($scope.options).then(function(imageURI) {
-        $scope.imageURI = imageURI;
-        if ($scope.imageURI != null) $scope.buttonName = "Save";
+      $cordovaCamera.getPicture($scope.options).then(function(imageData) {
+        $scope.imageData = imageData.replace(/\s/g, '');  // Per Stack Overflow, Cordova camera can add whitespace
+        $scope.imageSrc = "data:image/jpeg;base64," + $scope.imageData;
+        if ($scope.imageData != null) $scope.buttonName = "Save";
       }, function(err) {
         console.log("Unable to load camera: " + err);
       });
     } else {
       // Save photo
-      $scope.item.addPhoto($scope.imageURI);
-      $scope.imageURI = null;
+      var fileName = "photo" + $scope.item.numberPhotos() + ".jpg";
+      // photos stored in event-photos directory under the item's id
+      var storageRef = firebase.storage().ref('event-photos/' + $scope.item.id).child(fileName);
+      var uploadTask = storageRef.putString($scope.imageData, 'base64', {contentType: 'image/jpg'});
+      uploadTask.on('state_changed', function(snapshot) {
+        console.log('success')
+      }, function(error) {
+        console.log(error);
+      }, function() {
+        $scope.item.addPhoto(uploadTask.snapshot.downloadURL);
+        $scope.imageData = null;
+        $scope.imageSrc = null;
+        //$scope.$apply();
+      });
+
       $state.go('tab.todo');
     }
 
   };
 
   $scope.cancel = function() {
-    $scope.imageURI = null;
+    $scope.imageData = null;
+    $scope.imageSrc = null;
+    //$scope.$apply();
     $state.go('tab.todo');
   };
 });
