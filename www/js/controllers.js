@@ -652,6 +652,12 @@ angular.module('starter.controllers', ['ngCordova'])
         time.setTime(itemData.time);  // itemData.time is a long int, need to convert to Date object
         var item = new Item(itemData.id, itemData.name, itemData.description, time, itemData.timeless, itemData.duration, itemData.timeSpent);
         if (itemData.completed == true) item.completeTask();
+        console.log(itemData.photos);
+        if (itemData.photos != null) {
+          for (var i = 0; i < itemData.photos.length; i++) {
+            item.addPhoto(itemData.photos[i]);
+          }
+        }
         var date = item.getDate();
         var day = schedule.getDay(date);  // getDay will create day and adds to schedule if does not exist
         day.addItem(item);
@@ -848,6 +854,10 @@ angular.module('starter.controllers', ['ngCordova'])
         console.log(error);
       }, function() {
         $scope.item.addPhoto(uploadTask.snapshot.downloadURL);
+        // Save photo url to Firebase
+        var id = $scope.item.id;
+        var itemRef = firebase.database().ref('schedules/' + $rootScope.user.uid + '/' + id);
+        itemRef.update({photos: $scope.item.getPhotos()});
         $scope.imageData = null;
         $scope.imageSrc = null;
         //$scope.$apply();

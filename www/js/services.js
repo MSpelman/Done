@@ -321,7 +321,11 @@ angular.module('starter.services', [])
 
     this.numberPhotos = function() {
       return this.photos.length;
-    }
+    };
+
+    this.getPhotos = function() {
+      return this.photos;
+    };
 
     /* this.addBeforeTask = function(newTask) {
       this.beforeTasks.push(newTask);
