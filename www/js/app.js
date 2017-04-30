@@ -143,6 +143,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
       controller:'startCtrl',
       params: {
         'countdown': 0,
+        'countdownsec' :0,
         'itemID' :null,
       }
   })
