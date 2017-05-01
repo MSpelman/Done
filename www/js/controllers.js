@@ -112,6 +112,30 @@ angular.module('starter.controllers', [])
               $scope.completeTask(item);
             }
             break;
+          case 1:
+            var myPopup=$ionicPopup.show( {
+                template:'<input type="text" ng-model="$parent.countdown" placeholder="minutes" >' +
+                '<input type="text" ng-model="$parent.countdownsec" placeholder="seconds (0 to 59)" min="0" max="59" >',
+                  title:'Set Count Down',
+              scope:$scope,
+              buttons:[
+              {text:'Cancel'},
+                {text: '<b> Start </b>',
+                  type:'button-positive',
+                  onTap:function(){
+                      $state.go('start-task',{ countdown : $scope.countdown,countdownsec:$scope.countdownsec, itemID: item.id});
+                    $scope.countdown="";
+                    $scope.countdownsec="";
+
+                }
+
+            }
+            ]
+          });
+
+
+
+              break;
           case 2:
             $state.go('item-entry', {
               'itemId': item.id
@@ -271,6 +295,11 @@ angular.module('starter.controllers', [])
     }
   };
 
+  $scope.getDuration = function() {
+    if ($scope.item.duration < 1) return "";
+    else return $scope.item.duration;
+  };
+
   // Formats time in human readable form
   $scope.displayTime = function() {
     return $scope.item.displayTime();
@@ -325,6 +354,18 @@ angular.module('starter.controllers', [])
 
   $scope.goToMonth = function() {
     $state.go('tab.month-metrics');
+  };
+
+  // Expects time in minutes
+  $scope.displayTime = function(time) {
+    var result = "";
+    if (time < 60) {
+      result = time.toString() + " mins";
+    } else {
+      var hours = time / 60;
+      result = hours.toFixed(2) + " hrs";
+    }
+    return result;
   };
 
   $scope.getMetrics = function() {
@@ -396,6 +437,18 @@ angular.module('starter.controllers', [])
 
   $scope.goToMonth = function() {
     $state.go('tab.month-metrics');
+  };
+
+  // Expects time in minutes
+  $scope.displayTime = function(time) {
+    var result = "";
+    if (time < 60) {
+      result = time.toString() + " mins";
+    } else {
+      var hours = time / 60;
+      result = hours.toFixed(2) + " hrs";
+    }
+    return result;
   };
 
   $scope.getMetrics = function() {
@@ -473,6 +526,18 @@ angular.module('starter.controllers', [])
 
   $scope.goToWeek = function() {
     $state.go('tab.week-metrics');
+  };
+
+  // Expects time in minutes
+  $scope.displayTime = function(time) {
+    var result = "";
+    if (time < 60) {
+      result = time.toString() + " mins";
+    } else {
+      var hours = time / 60;
+      result = hours.toFixed(2) + " hrs";
+    }
+    return result;
   };
 
   $scope.getMetrics = function() {
@@ -637,6 +702,7 @@ angular.module('starter.controllers', [])
       $scope.name = item.name;
       $scope.description = item.description;
       $scope.duration = item.duration;
+      if ($scope.duration < 1) $scope.duration = "";
       $scope.timeSpent = item.timeSpent;
       // This block of code replaced by item.getDate()
       // var dateTime = item.time;  // item.time stores date and time together
@@ -668,7 +734,7 @@ angular.module('starter.controllers', [])
     var month = date.getMonth();
     var day = date.getDate();
     dateTime.setFullYear(year, month, day);
-    if ($scope.duration < 1) $scope.duration = null;
+    if ($scope.duration < 1) $scope.duration = -1;
     if ($scope.timeSpent == "") $scope.timeSpent = 0;
 
     var id;
@@ -748,4 +814,85 @@ angular.module('starter.controllers', [])
 
     return availableId;
   } */
-});
+})
+.controller('startCtrl', function ($scope,$state,$stateParams,$timeout,$rootScope,$ionicPopup) {
+  $scope.$on('$ionicView.enter', function(e) {
+    $scope.myTimerMin = $stateParams.countdown;
+    $scope.myTimerSec = $stateParams.countdownsec;
+    if ($scope.myTimerMin <=9) {
+      $scope.myTimerMin = ("0" + $scope.myTimerMin).slice(-2)
+    }
+    if ($scope.myTimerSec <=9) {
+      $scope.myTimerSec = ("0" + $scope.myTimerSec).slice(-2)
+    }
+    var id = $stateParams.itemID;
+    var itemRef = firebase.database().ref('schedules/' + $rootScope.user.uid + '/' + id);
+    var myTimerVariable = $timeout(myCustomTimer, 1000);
+
+    function myCustomTimer() {
+      if ($scope.myTimerSec == 0) {
+        $scope.myTimerMin--;
+        $scope.myTimerSec = 59;
+      } else {
+        $scope.myTimerSec--;
+      }
+      if ($scope.myTimerMin <=9) {
+        $scope.myTimerMin = ("0" + $scope.myTimerMin).slice(-2)
+      }
+      if ($scope.myTimerSec <=9) {
+        $scope.myTimerSec = ("0" + $scope.myTimerSec).slice(-2)
+      }
+      if ($scope.myTimerSec == 0 && $scope.myTimerMin ==0) {
+        $timeout.cancel(myTimerVariable);
+        var Popup = $ionicPopup.show({
+          title: 'Done!',
+          template: 'Congratulation on finishing',
+          buttons:[
+            {
+            text: '<b> return to app</b>',
+            type: 'button-positive',
+            onTap: function () {
+              itemRef.once("value").then(function (snapshot) {
+                var post = snapshot.child("timeSpent").val();
+           // var Spent = $stateParams.countdown - $scope.myTimer;
+
+                itemRef.update({timeSpent: post+ Math.round($stateParams.countdown*1+$stateParams.countdownsec/60)});
+                $state.go('tab.todo');
+
+              });
+            }
+          }
+          ]
+        });
+      }
+      else {
+        myTimerVariable = $timeout(myCustomTimer, 1000);
+      }
+    }
+
+    $scope.stopTimer = function () {
+      var oldSpent;
+
+      var deletePopup = $ionicPopup.confirm({
+        title: 'quitting?',
+        template: 'Are you sure you want to quit?',
+        okType: 'button-default',
+        cancelType: 'button-calm'
+      });
+      deletePopup.then(function (res) {
+        if (res) {
+          itemRef.once("value").then(function (snapshot) {
+            var post = snapshot.child("timeSpent").val();
+            var Spent = $stateParams.countdown*60 +$stateParams.countdownsec*1- $scope.myTimerSec*1-$scope.myTimerMin*60;
+            $scope.myTimerMin = 0;
+            $scope.myTimerSec = 0;
+            $timeout.cancel(myTimerVariable);
+            itemRef.update({timeSpent: post+ Math.round(Spent/ 60)});
+            $state.go('tab.todo');
+
+          });
+        }
+      });
+    }
+  })
+})
