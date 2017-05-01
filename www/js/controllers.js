@@ -652,7 +652,7 @@ angular.module('starter.controllers', ['ngCordova'])
         time.setTime(itemData.time);  // itemData.time is a long int, need to convert to Date object
         var item = new Item(itemData.id, itemData.name, itemData.description, time, itemData.timeless, itemData.duration, itemData.timeSpent);
         if (itemData.completed == true) item.completeTask();
-        console.log(itemData.photos);
+
         if (itemData.photos != null) {
           for (var i = 0; i < itemData.photos.length; i++) {
             item.addPhoto(itemData.photos[i]);
@@ -846,7 +846,7 @@ angular.module('starter.controllers', ['ngCordova'])
         $scope.imageSrc = "data:image/jpeg;base64," + $scope.imageData;
         if ($scope.imageData != null) $scope.buttonName = "Save";
       }, function(err) {
-        console.log("Unable to load camera: " + err);
+        console.error('Unable to load camera', err);
       });
     } else {
       // Save photo
@@ -857,18 +857,18 @@ angular.module('starter.controllers', ['ngCordova'])
       uploadTask.on('state_changed', function(snapshot) {
         console.log('success')
       }, function(error) {
-        console.log(error);
+        console.error('Error Saving Photo', error);
       }, function() {
         $scope.item.addPhoto(uploadTask.snapshot.downloadURL);
         // Save photo url to Firebase
         var id = $scope.item.id;
         var itemRef = firebase.database().ref('schedules/' + $rootScope.user.uid + '/' + id);
         itemRef.update({photos: $scope.item.getPhotos()});
-        $scope.imageData = null;
-        $scope.imageSrc = null;
-        //$scope.$apply();
       });
 
+      $scope.imageData = null;
+      $scope.imageSrc = null;
+      //$scope.$apply();
       $state.go('tab.todo');
     }
 
