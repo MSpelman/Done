@@ -10,10 +10,10 @@
   </ion-header-bar>
   <ion-content class="padding">
     <div class="padding item item-divider">
-      Daily Stats for: <input type="date" ng-model="$parent.selectedDate" ng-blur="getMetrics()">
+      Daily Stats for: <input type="date" ng-model="$parent.selectedDate" ng-blur="getMetrics()" style="height: 18px">
     </div>
     <div>
-      <strong>Tasks completed: </strong>{{$parent.numberCompleted}} / {{$parent.numberTasks}}<br>
+      <strong>Tasks Completed: </strong>{{$parent.numberCompleted}} / {{$parent.numberTasks}}<br>
       <strong>Number of Events: </strong>{{$parent.numberEvents}}<br>
       <strong>Time Spent:</strong>
     </div>
