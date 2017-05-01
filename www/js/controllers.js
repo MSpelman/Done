@@ -113,6 +113,30 @@ angular.module('starter.controllers', ['ngCordova'])
               $scope.completeTask(item);
             }
             break;
+          case 1:
+            var myPopup=$ionicPopup.show( {
+                template:'<input type="text" ng-model="$parent.countdown" placeholder="minutes" >' +
+                '<input type="text" ng-model="$parent.countdownsec" placeholder="seconds (0 to 59)" min="0" max="59" >',
+                  title:'Set Count Down',
+              scope:$scope,
+              buttons:[
+              {text:'Cancel'},
+                {text: '<b> Start </b>',
+                  type:'button-positive',
+                  onTap:function(){
+                      $state.go('start-task',{ countdown : $scope.countdown,countdownsec:$scope.countdownsec, itemID: item.id});
+                    $scope.countdown="";
+                    $scope.countdownsec="";
+
+                }
+
+            }
+            ]
+          });
+
+
+
+              break;
           case 2:
             $state.go('item-entry', {
               'itemId': item.id
@@ -276,9 +300,14 @@ angular.module('starter.controllers', ['ngCordova'])
     }
   };
 
-  $scope.getDuration = function() {
+  $scope.displayDuration = function() {
     if ($scope.item.duration < 1) return "";
-    else return $scope.item.duration;
+    else return displayTimeSpan($scope.item.duration);
+  };
+
+  $scope.displayTimeSpent = function() {
+    if ($scope.item.timeSpent < 1) return displayTimeSpan(0);
+    else return displayTimeSpan($scope.item.timeSpent);
   };
 
   // Formats time in human readable form
@@ -293,6 +322,18 @@ angular.module('starter.controllers', ['ngCordova'])
       return "-";
     }
   } */
+
+  // Expects time in minutes
+  function displayTimeSpan(timeSpan) {
+    var result = "";
+    if (timeSpan < 60) {
+      result = timeSpan.toString() + " mins";
+    } else {
+      var hours = timeSpan / 60;
+      result = hours.toFixed(2) + " hrs";
+    }
+    return result;
+  }
 })
 
 .controller('CalendarDetailCtrl', function($scope, $stateParams, Chats) {
@@ -577,11 +618,13 @@ angular.module('starter.controllers', ['ngCordova'])
   //   location.reload();
   //   $stateParams.refresh = 0;
   // }
-  if(firebase.auth().currentUser){
-    $scope.todisplay="Logout: "+firebase.auth().currentUser.email;
-  } else {
-    $state.go('login');
-  }
+  $scope.$on('$ionicView.enter', function(e) {
+    if (firebase.auth().currentUser) {
+      $scope.todisplay = "Logout: " + firebase.auth().currentUser.email;
+    } else {
+      $state.go('login');
+    }
+  });
 
   $scope.onClick = function () {
     if(firebase.auth().currentUser){
@@ -612,7 +655,7 @@ angular.module('starter.controllers', ['ngCordova'])
       $rootScope.user = firebase.auth().currentUser;
       $rootScope.schedule = getSchedule();
       $ionicLoading.show({template: 'Login Successfully!', noBackdrop: true, duration: 1000});
-      $state.go('tab.settings', {refresh: 1});
+      $state.go('tab.todo', {refresh: 1});
     }).catch(function (error) {
       var errorCode = error.code;
       var errorMessage = error.message;
@@ -628,7 +671,7 @@ angular.module('starter.controllers', ['ngCordova'])
         $rootScope.user = firebase.auth().currentUser;
         $rootScope.schedule = new Calendar();
         $ionicLoading.show({template: 'Created Firebase User!', noBackdrop: true, duration: 1000});
-        $state.go('tab.settings', {refresh: 1});
+        $state.go('tab.todo', {refresh: 1});
       });
     }).catch(function (error) {
       var errorCode = error.code;
@@ -880,4 +923,86 @@ angular.module('starter.controllers', ['ngCordova'])
     //$scope.$apply();
     $state.go('tab.todo');
   };
+})
+
+.controller('startCtrl', function ($scope,$state,$stateParams,$timeout,$rootScope,$ionicPopup) {
+  $scope.$on('$ionicView.enter', function(e) {
+    $scope.myTimerMin = $stateParams.countdown;
+    $scope.myTimerSec = $stateParams.countdownsec;
+    if ($scope.myTimerMin <=9) {
+      $scope.myTimerMin = ("0" + $scope.myTimerMin).slice(-2)
+    }
+    if ($scope.myTimerSec <=9) {
+      $scope.myTimerSec = ("0" + $scope.myTimerSec).slice(-2)
+    }
+    var id = $stateParams.itemID;
+    var itemRef = firebase.database().ref('schedules/' + $rootScope.user.uid + '/' + id);
+    var myTimerVariable = $timeout(myCustomTimer, 1000);
+
+    function myCustomTimer() {
+      if ($scope.myTimerSec == 0) {
+        $scope.myTimerMin--;
+        $scope.myTimerSec = 59;
+      } else {
+        $scope.myTimerSec--;
+      }
+      if ($scope.myTimerMin <=9) {
+        $scope.myTimerMin = ("0" + $scope.myTimerMin).slice(-2)
+      }
+      if ($scope.myTimerSec <=9) {
+        $scope.myTimerSec = ("0" + $scope.myTimerSec).slice(-2)
+      }
+      if ($scope.myTimerSec == 0 && $scope.myTimerMin ==0) {
+        $timeout.cancel(myTimerVariable);
+        var Popup = $ionicPopup.show({
+          title: 'Done!',
+          template: 'Congratulation on finishing',
+          buttons:[
+            {
+            text: '<b> return to app</b>',
+            type: 'button-positive',
+            onTap: function () {
+              itemRef.once("value").then(function (snapshot) {
+                var post = snapshot.child("timeSpent").val();
+           // var Spent = $stateParams.countdown - $scope.myTimer;
+
+                itemRef.update({timeSpent: post+ Math.round($stateParams.countdown*1+$stateParams.countdownsec/60)});
+                $state.go('tab.todo');
+
+              });
+            }
+          }
+          ]
+        });
+      }
+      else {
+        myTimerVariable = $timeout(myCustomTimer, 1000);
+      }
+    }
+
+    $scope.stopTimer = function () {
+      var oldSpent;
+
+      var deletePopup = $ionicPopup.confirm({
+        title: 'quitting?',
+        template: 'Are you sure you want to quit?',
+        okType: 'button-default',
+        cancelType: 'button-calm'
+      });
+      deletePopup.then(function (res) {
+        if (res) {
+          itemRef.once("value").then(function (snapshot) {
+            var post = snapshot.child("timeSpent").val();
+            var Spent = $stateParams.countdown*60 +$stateParams.countdownsec*1- $scope.myTimerSec*1-$scope.myTimerMin*60;
+            $scope.myTimerMin = 0;
+            $scope.myTimerSec = 0;
+            $timeout.cancel(myTimerVariable);
+            itemRef.update({timeSpent: post+ Math.round(Spent/ 60)});
+            $state.go('tab.todo');
+
+          });
+        }
+      });
+    }
+  })
 });

@@ -266,6 +266,11 @@ angular.module('starter.services', [])
     this.timeless = timeless;
     this.completed = false;
     this.duration = duration;
+    if (this.duration < 60) {
+      this.calendarHeight = 60;
+    } else {
+      this.calendarHeight = this.duration;
+    }
     this.timeSpent = timeSpent;  // Time spent on task in minutes
     this.photos = [];
     //this.beforeTasks = [];

@@ -3,7 +3,6 @@
     <h2 class="title">Calendar</h2>
   </ion-header-bar>
   <ion-content>
-    <div class="calendarBody">
     <ion-item class="item-button-left item-button-right">
       <button class="button button-icon" ng-click="prevDate()">
         <i class="icon ion-chevron-left"></i>
@@ -19,11 +18,9 @@
         <div class="wrapper">
       <div class="calendarDayView">
         <ion-list>
-          <ion-item class="calendarEvent" ng-repeat="item in events.items"  type="item-text-wrap" href="#/tab/calendar/{{item.id}}" ng-style="{'height': item.duration + 'px', 'top': item.time.getHours() * 60 + 'px'}">
-            <div>
+          <ion-item class="calendarEvent" ng-repeat="item in events.items"  type="item-text-wrap"
+                     ng-style="{'height': item.calendarHeight + 'px', 'top': item.time.getHours() * 60 + item.time.getMinutes() + 'px'}">
               <h2>{{item.name}}</h2>
-            <!--</div> -->
-            </div>
           </ion-item>
         </ion-list>
       </div>
@@ -151,6 +148,5 @@
         </div>
         </div>
       </ion-scroll>
-    </div>
   </ion-content>
 </ion-view>
