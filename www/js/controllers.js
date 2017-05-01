@@ -295,9 +295,14 @@ angular.module('starter.controllers', [])
     }
   };
 
-  $scope.getDuration = function() {
+  $scope.displayDuration = function() {
     if ($scope.item.duration < 1) return "";
-    else return $scope.item.duration;
+    else return displayTimeSpan($scope.item.duration);
+  };
+
+  $scope.displayTimeSpent = function() {
+    if ($scope.item.timeSpent < 1) return displayTimeSpan(0);
+    else return displayTimeSpan($scope.item.timeSpent);
   };
 
   // Formats time in human readable form
@@ -312,6 +317,18 @@ angular.module('starter.controllers', [])
       return "-";
     }
   } */
+
+  // Expects time in minutes
+  function displayTimeSpan(timeSpan) {
+    var result = "";
+    if (timeSpan < 60) {
+      result = timeSpan.toString() + " mins";
+    } else {
+      var hours = timeSpan / 60;
+      result = hours.toFixed(2) + " hrs";
+    }
+    return result;
+  }
 })
 
 .controller('CalendarDetailCtrl', function($scope, $stateParams, Chats) {
@@ -596,11 +613,13 @@ angular.module('starter.controllers', [])
   //   location.reload();
   //   $stateParams.refresh = 0;
   // }
-  if(firebase.auth().currentUser){
-    $scope.todisplay="Logout: "+firebase.auth().currentUser.email;
-  } else {
-    $state.go('login');
-  }
+  $scope.$on('$ionicView.enter', function(e) {
+    if (firebase.auth().currentUser) {
+      $scope.todisplay = "Logout: " + firebase.auth().currentUser.email;
+    } else {
+      $state.go('login');
+    }
+  });
 
   $scope.onClick = function () {
     if(firebase.auth().currentUser){
@@ -631,7 +650,7 @@ angular.module('starter.controllers', [])
       $rootScope.user = firebase.auth().currentUser;
       $rootScope.schedule = getSchedule();
       $ionicLoading.show({template: 'Login Successfully!', noBackdrop: true, duration: 1000});
-      $state.go('tab.settings', {refresh: 1});
+      $state.go('tab.todo', {refresh: 1});
     }).catch(function (error) {
       var errorCode = error.code;
       var errorMessage = error.message;
@@ -647,7 +666,7 @@ angular.module('starter.controllers', [])
         $rootScope.user = firebase.auth().currentUser;
         $rootScope.schedule = new Calendar();
         $ionicLoading.show({template: 'Created Firebase User!', noBackdrop: true, duration: 1000});
-        $state.go('tab.settings', {refresh: 1});
+        $state.go('tab.todo', {refresh: 1});
       });
     }).catch(function (error) {
       var errorCode = error.code;
