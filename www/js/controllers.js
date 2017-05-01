@@ -271,9 +271,14 @@ angular.module('starter.controllers', [])
     }
   };
 
-  $scope.getDuration = function() {
+  $scope.displayDuration = function() {
     if ($scope.item.duration < 1) return "";
-    else return $scope.item.duration;
+    else return displayTimeSpan($scope.item.duration);
+  };
+
+  $scope.displayTimeSpent = function() {
+    if ($scope.item.timeSpent < 1) return displayTimeSpan(0);
+    else return displayTimeSpan($scope.item.timeSpent);
   };
 
   // Formats time in human readable form
@@ -288,6 +293,18 @@ angular.module('starter.controllers', [])
       return "-";
     }
   } */
+
+  // Expects time in minutes
+  function displayTimeSpan(timeSpan) {
+    var result = "";
+    if (timeSpan < 60) {
+      result = timeSpan.toString() + " mins";
+    } else {
+      var hours = timeSpan / 60;
+      result = hours.toFixed(2) + " hrs";
+    }
+    return result;
+  }
 })
 
 .controller('CalendarDetailCtrl', function($scope, $stateParams, Chats) {
